@@ -1,0 +1,294 @@
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+Partial Class frmExport2Banks
+    Inherits System.Windows.Forms.Form
+
+    'Form overrides dispose to clean up the component list.
+    <System.Diagnostics.DebuggerNonUserCode()>
+    Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Try
+            If disposing AndAlso components IsNot Nothing Then
+                components.Dispose()
+            End If
+        Finally
+            MyBase.Dispose(disposing)
+        End Try
+    End Sub
+
+    'Required by the Windows Form Designer
+    Private components As System.ComponentModel.IContainer
+
+    'NOTE: The following procedure is required by the Windows Form Designer
+    'It can be modified using the Windows Form Designer.  
+    'Do not modify it using the code editor.
+    <System.Diagnostics.DebuggerStepThrough()>
+    Private Sub InitializeComponent()
+        Me.cboBanks = New System.Windows.Forms.ComboBox()
+        Me.GridBatch = New System.Windows.Forms.DataGridView()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.txtCount = New System.Windows.Forms.TextBox()
+        Me.CmbAcctToExp = New System.Windows.Forms.ComboBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.txtAmount = New System.Windows.Forms.TextBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.txtLotNo = New System.Windows.Forms.TextBox()
+        Me.LblDelete = New System.Windows.Forms.LinkLabel()
+        Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.GridUNCinBatch = New System.Windows.Forms.DataGridView()
+        Me.dgrVendorPayments = New System.Windows.Forms.DataGridView()
+        Me.S = New System.Windows.Forms.DataGridViewCheckBoxColumn()
+        Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.LblUpdateBatchNo = New System.Windows.Forms.LinkLabel()
+        Me.ChkPending = New System.Windows.Forms.CheckBox()
+        Me.LblExport = New System.Windows.Forms.LinkLabel()
+        Me.TabControl1 = New System.Windows.Forms.TabControl()
+        CType(Me.GridBatch, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage2.SuspendLayout()
+        CType(Me.GridUNCinBatch, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.dgrVendorPayments, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage1.SuspendLayout()
+        Me.TabControl1.SuspendLayout()
+        Me.SuspendLayout()
+        '
+        'cboBanks
+        '
+        Me.cboBanks.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboBanks.FormattingEnabled = True
+        Me.cboBanks.Items.AddRange(New Object() {"CTB-CitiBank", "SCB-SCB", "VCB-VietcomBak", "VPB-VPBank"})
+        Me.cboBanks.Location = New System.Drawing.Point(6, 12)
+        Me.cboBanks.Name = "cboBanks"
+        Me.cboBanks.Size = New System.Drawing.Size(146, 21)
+        Me.cboBanks.TabIndex = 7
+        '
+        'GridBatch
+        '
+        Me.GridBatch.AllowUserToAddRows = False
+        Me.GridBatch.AllowUserToDeleteRows = False
+        Me.GridBatch.BackgroundColor = System.Drawing.Color.LightCyan
+        Me.GridBatch.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.GridBatch.Location = New System.Drawing.Point(7, 6)
+        Me.GridBatch.Name = "GridBatch"
+        Me.GridBatch.ReadOnly = True
+        Me.GridBatch.RowHeadersVisible = False
+        Me.GridBatch.Size = New System.Drawing.Size(138, 433)
+        Me.GridBatch.TabIndex = 2
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(373, 450)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(35, 13)
+        Me.Label3.TabIndex = 11
+        Me.Label3.Text = "Count"
+        '
+        'txtCount
+        '
+        Me.txtCount.Location = New System.Drawing.Point(414, 446)
+        Me.txtCount.Name = "txtCount"
+        Me.txtCount.Size = New System.Drawing.Size(36, 20)
+        Me.txtCount.TabIndex = 10
+        Me.txtCount.Text = "0"
+        Me.txtCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'CmbAcctToExp
+        '
+        Me.CmbAcctToExp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CmbAcctToExp.FormattingEnabled = True
+        Me.CmbAcctToExp.Location = New System.Drawing.Point(49, 447)
+        Me.CmbAcctToExp.Name = "CmbAcctToExp"
+        Me.CmbAcctToExp.Size = New System.Drawing.Size(135, 21)
+        Me.CmbAcctToExp.TabIndex = 9
+        '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(190, 450)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(67, 13)
+        Me.Label2.TabIndex = 8
+        Me.Label2.Text = "SelectedAmt"
+        '
+        'txtAmount
+        '
+        Me.txtAmount.Location = New System.Drawing.Point(260, 447)
+        Me.txtAmount.Name = "txtAmount"
+        Me.txtAmount.Size = New System.Drawing.Size(107, 20)
+        Me.txtAmount.TabIndex = 7
+        Me.txtAmount.Text = "0"
+        Me.txtAmount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(456, 450)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(52, 13)
+        Me.Label1.TabIndex = 6
+        Me.Label1.Text = "BatchNo."
+        '
+        'txtLotNo
+        '
+        Me.txtLotNo.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
+        Me.txtLotNo.Location = New System.Drawing.Point(514, 447)
+        Me.txtLotNo.Name = "txtLotNo"
+        Me.txtLotNo.Size = New System.Drawing.Size(106, 20)
+        Me.txtLotNo.TabIndex = 5
+        '
+        'LblDelete
+        '
+        Me.LblDelete.AutoSize = True
+        Me.LblDelete.Location = New System.Drawing.Point(6, 442)
+        Me.LblDelete.Name = "LblDelete"
+        Me.LblDelete.Size = New System.Drawing.Size(38, 13)
+        Me.LblDelete.TabIndex = 4
+        Me.LblDelete.TabStop = True
+        Me.LblDelete.Text = "Delete"
+        '
+        'TabPage2
+        '
+        Me.TabPage2.Controls.Add(Me.LblDelete)
+        Me.TabPage2.Controls.Add(Me.GridUNCinBatch)
+        Me.TabPage2.Controls.Add(Me.GridBatch)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage2.Name = "TabPage2"
+        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage2.Size = New System.Drawing.Size(770, 469)
+        Me.TabPage2.TabIndex = 1
+        Me.TabPage2.Text = "View_Edit"
+        Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'GridUNCinBatch
+        '
+        Me.GridUNCinBatch.AllowUserToAddRows = False
+        Me.GridUNCinBatch.AllowUserToDeleteRows = False
+        Me.GridUNCinBatch.BackgroundColor = System.Drawing.Color.Azure
+        Me.GridUNCinBatch.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.GridUNCinBatch.Location = New System.Drawing.Point(151, 6)
+        Me.GridUNCinBatch.Name = "GridUNCinBatch"
+        Me.GridUNCinBatch.ReadOnly = True
+        Me.GridUNCinBatch.RowHeadersVisible = False
+        Me.GridUNCinBatch.Size = New System.Drawing.Size(616, 433)
+        Me.GridUNCinBatch.TabIndex = 3
+        '
+        'dgrVendorPayments
+        '
+        Me.dgrVendorPayments.AllowUserToAddRows = False
+        Me.dgrVendorPayments.AllowUserToDeleteRows = False
+        Me.dgrVendorPayments.BackgroundColor = System.Drawing.Color.LightCyan
+        Me.dgrVendorPayments.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgrVendorPayments.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.S})
+        Me.dgrVendorPayments.Location = New System.Drawing.Point(5, 6)
+        Me.dgrVendorPayments.Name = "dgrVendorPayments"
+        Me.dgrVendorPayments.RowHeadersVisible = False
+        Me.dgrVendorPayments.Size = New System.Drawing.Size(760, 437)
+        Me.dgrVendorPayments.TabIndex = 0
+        '
+        'S
+        '
+        Me.S.HeaderText = "S"
+        Me.S.Name = "S"
+        Me.S.Width = 32
+        '
+        'TabPage1
+        '
+        Me.TabPage1.Controls.Add(Me.Label3)
+        Me.TabPage1.Controls.Add(Me.txtCount)
+        Me.TabPage1.Controls.Add(Me.CmbAcctToExp)
+        Me.TabPage1.Controls.Add(Me.Label2)
+        Me.TabPage1.Controls.Add(Me.txtAmount)
+        Me.TabPage1.Controls.Add(Me.Label1)
+        Me.TabPage1.Controls.Add(Me.txtLotNo)
+        Me.TabPage1.Controls.Add(Me.dgrVendorPayments)
+        Me.TabPage1.Controls.Add(Me.LblUpdateBatchNo)
+        Me.TabPage1.Controls.Add(Me.ChkPending)
+        Me.TabPage1.Controls.Add(Me.LblExport)
+        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage1.Name = "TabPage1"
+        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage1.Size = New System.Drawing.Size(770, 469)
+        Me.TabPage1.TabIndex = 0
+        Me.TabPage1.Text = "Export"
+        Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'LblUpdateBatchNo
+        '
+        Me.LblUpdateBatchNo.AutoSize = True
+        Me.LblUpdateBatchNo.Enabled = False
+        Me.LblUpdateBatchNo.Location = New System.Drawing.Point(626, 450)
+        Me.LblUpdateBatchNo.Name = "LblUpdateBatchNo"
+        Me.LblUpdateBatchNo.Size = New System.Drawing.Size(42, 13)
+        Me.LblUpdateBatchNo.TabIndex = 1
+        Me.LblUpdateBatchNo.TabStop = True
+        Me.LblUpdateBatchNo.Text = "Update"
+        '
+        'ChkPending
+        '
+        Me.ChkPending.AutoSize = True
+        Me.ChkPending.Location = New System.Drawing.Point(669, 449)
+        Me.ChkPending.Name = "ChkPending"
+        Me.ChkPending.Size = New System.Drawing.Size(95, 17)
+        Me.ChkPending.TabIndex = 4
+        Me.ChkPending.Text = "Show Pending"
+        Me.ChkPending.UseVisualStyleBackColor = True
+        '
+        'LblExport
+        '
+        Me.LblExport.AutoSize = True
+        Me.LblExport.Location = New System.Drawing.Point(6, 450)
+        Me.LblExport.Name = "LblExport"
+        Me.LblExport.Size = New System.Drawing.Size(37, 13)
+        Me.LblExport.TabIndex = 1
+        Me.LblExport.TabStop = True
+        Me.LblExport.Text = "Export"
+        '
+        'TabControl1
+        '
+        Me.TabControl1.Controls.Add(Me.TabPage1)
+        Me.TabControl1.Controls.Add(Me.TabPage2)
+        Me.TabControl1.Location = New System.Drawing.Point(3, 33)
+        Me.TabControl1.Name = "TabControl1"
+        Me.TabControl1.SelectedIndex = 0
+        Me.TabControl1.Size = New System.Drawing.Size(778, 495)
+        Me.TabControl1.TabIndex = 8
+        '
+        'frmExport2Banks
+        '
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.ClientSize = New System.Drawing.Size(784, 561)
+        Me.Controls.Add(Me.TabControl1)
+        Me.Controls.Add(Me.cboBanks)
+        Me.Name = "frmExport2Banks"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        Me.Text = "Export2Banks"
+        CType(Me.GridBatch, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.TabPage2.ResumeLayout(False)
+        Me.TabPage2.PerformLayout()
+        CType(Me.GridUNCinBatch, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.dgrVendorPayments, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.TabPage1.ResumeLayout(False)
+        Me.TabPage1.PerformLayout()
+        Me.TabControl1.ResumeLayout(False)
+        Me.ResumeLayout(False)
+
+    End Sub
+    Friend WithEvents cboBanks As ComboBox
+    Friend WithEvents GridBatch As DataGridView
+    Friend WithEvents Label3 As Label
+    Friend WithEvents txtCount As TextBox
+    Friend WithEvents CmbAcctToExp As ComboBox
+    Friend WithEvents Label2 As Label
+    Friend WithEvents txtAmount As TextBox
+    Friend WithEvents Label1 As Label
+    Friend WithEvents txtLotNo As TextBox
+    Friend WithEvents LblDelete As LinkLabel
+    Friend WithEvents TabPage2 As TabPage
+    Friend WithEvents GridUNCinBatch As DataGridView
+    Friend WithEvents dgrVendorPayments As DataGridView
+    Friend WithEvents S As DataGridViewCheckBoxColumn
+    Friend WithEvents TabPage1 As TabPage
+    Friend WithEvents LblUpdateBatchNo As LinkLabel
+    Friend WithEvents ChkPending As CheckBox
+    Friend WithEvents LblExport As LinkLabel
+    Friend WithEvents TabControl1 As TabControl
+End Class
