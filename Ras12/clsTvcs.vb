@@ -1620,7 +1620,7 @@ Public Class clsTvcs
     Public Sub LoadCustShortNameListAsCombo(ByRef cboCustomers As ComboBox)
         Dim strCustList As String
         strCustList = "Select distinct CustShortName as Display,CustId as Value" _
-                    & " from go_companyinfo1 where Status='OK' order by CustShortName"
+                    & " from cwt.dbo.go_companyinfo1 where Status='OK' order by CustShortName"
         LoadComboDisplay(cboCustomers, strCustList)
     End Sub
     Public Function RasShortNameExists(ByRef strRasShortName As String) As Boolean

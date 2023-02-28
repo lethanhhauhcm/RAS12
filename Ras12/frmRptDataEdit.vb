@@ -1,4 +1,4 @@
-Public Class frmRequiredDataEdit
+﻿Public Class frmRptDataEdit
     Private mintOldCust As Integer
     Private mstrOldDataCode As String
 
@@ -49,12 +49,12 @@ Public Class frmRequiredDataEdit
             Exit Sub
         End If
 
-        lstQuerries.Add("Insert into GO_RequiredData (CustId, DataCode,NameByCustomer" _
+        lstQuerries.Add("Insert into RAS12.DBO.RptData (CustId, DataCode,NameByCustomer" _
                     & ",Status,MinLength,MaxLength,Mandatory,ConditionOfUse" _
                     & ",CharType,CollectionMethod,DefaultValue,CheckValues" _
                     & ",AllowSpecialValues,Fstuser,ApplyTo) values (" _
                     & cboCustShortName.SelectedValue _
-                    & ",'" & cboDataCode.Text.Split("-")(0) _
+                    & ",'" & cboDataCode.Text _
                     & "','" & txtNameByCustomer.Text & "','OK','" _
                     & txtMinLength.Text & "','" & txtMaxLength.Text _
                     & "','" & cboMandatory.Text _
@@ -66,16 +66,18 @@ Public Class frmRequiredDataEdit
 
         If txtRecID.Text <> "" Then
 
-            lstQuerries.Add("update GO_RequiredData set Status='XX'" _
+            lstQuerries.Add("update RAS12.DBO.RptData set Status='XX'" _
                             & ",LstUser='" & myStaff.SICode & "',LstUpdate=getdate()" _
                             & " where Recid=" & txtRecID.Text)
         End If
 
         If mintOldCust <> 0 Then
-            lstQuerries.Add("insert GO_RequiredDataValues (CustId, DataCode, DataType, Description, Value, FstUpdate, Fstuser)" _
-                            & " select " & cboCustShortName.SelectedValue & ",'" & cboDataCode.Text.Split("-")(0) _
+            lstQuerries.Add("insert RAS12.DBO.RptDataValues (CustId, DataCode, DataType, Description" _
+                            & ", Value, FstUpdate, Fstuser)" _
+                            & " select " & cboCustShortName.SelectedValue _
+                            & ",'" & cboDataCode.Text _
                             & "', DataType, Description, Value, getdate(),'" _
-                            & myStaff.SICode & "' from GO_RequiredDataValues where Status='ok' and Custid=" & mintOldCust & " and DataCode='" _
+                            & myStaff.SICode & "' from RAS12.DBO.RptDataValues where Status='ok' and Custid=" & mintOldCust & " and DataCode='" _
                             & mstrOldDataCode & "'")
         End If
 
@@ -102,7 +104,6 @@ Public Class frmRequiredDataEdit
 
         ' Add any initialization after the InitializeComponent() call.
         pobjTvcs.LoadCustShortNameListAsCombo(cboCustShortName)
-        pobjTvcs.LoadCombo(cboDataCode, "Select VAL+'-'+Details as Value from GO_Misc where Cat='DataCode' order by Val ")
 
         If Not objRow Is Nothing Then
             With objRow
@@ -111,7 +112,7 @@ Public Class frmRequiredDataEdit
                 cboCustShortName.SelectedIndex = cboCustShortName.FindStringExact(.Cells("CustShortName").Value)
                 cboApplyTo.SelectedIndex = cboApplyTo.FindStringExact(.Cells("ApplyTo").Value)
                 cboDataCode.SelectedIndex = cboDataCode.FindStringExact(
-                            .Cells("DataCode").Value & "-" & .Cells("Details").Value)
+                            .Cells("DataCode").Value)
 
                 If blnClone Then
                     mintOldCust = cboCustShortName.SelectedValue
@@ -133,13 +134,5 @@ Public Class frmRequiredDataEdit
 
             End With
         End If
-    End Sub
-
-    Private Sub cboMandatory_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cboMandatory.SelectedIndexChanged
-        
-    End Sub
-
-    Private Sub frmRequiredDataEdit_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
     End Sub
 End Class

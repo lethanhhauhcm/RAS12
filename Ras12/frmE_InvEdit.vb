@@ -4727,6 +4727,10 @@ Public Class frmE_InvEdit
                     DraftAirTemplate2(objSumRow, strProduct, strDomInt, intVatDiscount)
                 Case "INV_AIR3"
                     DraftAirTemplate3(objSumRow, strProduct, strDomInt, intVatDiscount)
+                '^_^20230217 add by 7643 -b-
+                Case "INV_AIR4"
+                    DraftAirTemplate4(objSumRow, strProduct, strDomInt, intVatDiscount)
+                    '^_^20230217 add by 7643 -e-
                 Case Else
                     'DraftAirGeneric(objSumRow, strProduct, strDomInt, intVatDiscount)  '^_^20221003 mark by 7643
                     '^_^20221003 modi by 7643 -b-
@@ -4990,6 +4994,205 @@ Public Class frmE_InvEdit
         RefreshGUI()
         Return True
     End Function
+
+    '^_^20230217 add by 7643 -b-
+    Private Function DraftAirTemplate4(objSumRow As DataGridViewRow, strProduct As String, strDomInt As String, intVatDiscount As Integer) As Boolean
+        Dim i As Integer
+        With objSumRow
+            If strProduct = "AIR" Then
+                Dim strDesc As String = ""
+                Dim strTkno4Sf As String = ""
+                Dim intVatPct4Fare As Integer
+                Dim blnGetFtc As Boolean
+                Dim blnGetMerchantFee As Boolean = GetThisTransaction(intVatDiscount, 10)
+                Dim intVatPctSf As Integer = .Cells("VatPctSf").Value
+                Dim blnGetSf As Boolean = GetThisTransaction(intVatDiscount, intVatPctSf)
+                Dim blnGetMf As Boolean = GetThisTransaction(intVatDiscount, 10)
+                Dim blnGetCharge As Boolean
+
+                If .Cells("Fare").Value = 0 And .Cells("UE").Value = 0 Then
+                    intVatPct4Fare = ScalarToInt("tkt", "Top 1 VatPctRounded", "RcpId in (" & objSumRow.Cells("RcpId").Value & ") and Status<>'XX'")
+                Else
+                    intVatPct4Fare = CalcVatPctNearest(.Cells("Fare").Value, .Cells("UE").Value)
+                End If
+
+                blnGetFtc = GetThisTransaction(intVatDiscount, intVatPct4Fare)
+
+                If .Cells("SRV").Value = "S" Then
+                    If .Cells("DocType").Value.ToString.Contains("ETK") _
+                        Or .Cells("DocType").Value.ToString.Contains("MCO") _
+                        Or .Cells("DocType").Value.ToString.Contains("ATK") Then
+                        For Each objTktRow As DataRow In mtblTkts.Rows
+                            strDesc = "Tiền vé máy bay"
+                            strDesc = strDesc & "||" & objTktRow("Tkno") _
+                            & "||" & ConvertItinerary4FullName(objTktRow("Itinerary")) _
+                            & "||" & objTktRow("PaxName") & "||Ngày đi: " & Format(objTktRow("DOF"), "dd-MMM-yy")
+                            If Not IsDBNull(objTktRow("ReturnDate")) AndAlso Trim(CStr(objTktRow("Itinerary"))).Split(" ").Length > 3 Then
+                                strDesc &= "||Ngày về: " & Format(objTktRow("ReturnDate"), "dd-MMM-yy")
+                            End If
+
+                            If objTktRow("Fare") + objTktRow("Tax") + objTktRow("Charge") = 0 Then
+                                strTkno4Sf = objTktRow("Tkno")
+                            ElseIf blnGetFtc Then
+                                Dim decVatable As Decimal
+                                Dim decVatFtc As Decimal
+                                decVatable = Math.Round((objTktRow("Fare") + objTktRow("VatAmt")) * 100 / (100 + intVatPct4Fare)) +
+                                             Math.Round((objTktRow("Tax") - objTktRow("VatAmt")) * 100 / (100 + intVatPct4Fare)) +
+                                Math.Round(objTktRow("Charge") * 100 / (100 + intVatPct4Fare))
+                                decVatFtc = (objTktRow("Fare") + objTktRow("Tax") + objTktRow("Charge")) - decVatable
+                                AddRow4E_Inv(strDesc, strDomInt, decVatable, True _
+                                     , decVatFtc,, "Vé", 1, intVatDiscount)
+                            End If
+                            If blnGetFtc Then
+                                If objTktRow("ChargeTV") <> 0 Then
+                                    Select Case objTktRow("DocType")
+                                        Case "AHC"
+                                            strDesc = "Phí dịch vụ ngoài giờ"
+                                        Case "INS"
+                                            strDesc = "Phí bảo hiểm"
+                                        Case Else
+                                            strDesc = ("Phí dịch vụ " & strTkno4Sf).Trim
+                                    End Select
+                                End If
+                                AddRow4E_Inv(strDesc, "DOM", objTktRow("ChargeTV"), False, 0,, "Lần", 1, intVatDiscount)
+                            End If
+
+                            If blnGetMerchantFee AndAlso .Cells("MerchantFee").Value <> 0 Then
+                                Dim decMfNoVat As Decimal = RoundNearest(.Cells("MerchantFee").Value * 100 / 110)
+                                Dim decVatMf As Decimal = .Cells("MerchantFee").Value - decMfNoVat
+                                strDesc = ("Phí cà thẻ " & strTkno4Sf).Trim
+                                AddRow4E_Inv(strDesc, "DOM", decMfNoVat, True, decVatMf, 10, "Lần", 1, intVatDiscount)
+                            End If
+                            If objTktRow("StockCtrl") <> "" Then
+                                Dim objOriInv As DataRow
+                                objOriInv = GetOriginalInvBoth(objTktRow("StockCtrl"))
+                                If objOriInv IsNot Nothing Then
+                                    mintAdjustType = 2
+                                    Me.Text = "Điều chỉnh tăng hóa đơn "
+                                    mstrOldInvPattern = objOriInv("MauSo")
+                                    mstrOldInvSerial = objOriInv("KyHieu")
+                                    mdteOldInvDOI = objOriInv("DOI")
+                                    mintOldInvNo = objOriInv("InvoiceNo")
+                                    txtOriInvNbr.Text = objOriInv("InvoiceNo")
+                                    txtOriFkey.Text = objOriInv("InvId")
+                                    pnlOriInv.Visible = True
+                                End If
+                            End If
+                        Next
+                    Else
+                        For Each objTktRow As DataRow In mtblTkts.Rows
+                            If blnGetFtc Then
+                                If objTktRow("ChargeTV") <> 0 Then
+                                    Select Case objTktRow("DocType")
+                                        Case "AHC"
+                                            strDesc = "Phí dịch vụ ngoài giờ"
+                                        Case "INS"
+                                            strDesc = "Phí bảo hiểm"
+                                        Case Else
+                                            strDesc = ("Phí dịch vụ " & strTkno4Sf).Trim
+                                    End Select
+                                End If
+                                AddRow4E_Inv(strDesc & "||" & objTktRow("Tkno") & "||" & objTktRow("PaxName"), "DOM", objTktRow("ChargeTV"), False, 0,, "Lần", 1, intVatDiscount)
+                            End If
+
+                            If blnGetMerchantFee AndAlso .Cells("MerchantFee").Value <> 0 Then
+                                Dim decMfNoVat As Decimal = RoundNearest(.Cells("MerchantFee").Value * 100 / 110)
+                                Dim decVatMf As Decimal = .Cells("MerchantFee").Value - decMfNoVat
+                                strDesc = ("Phí cà thẻ " & strTkno4Sf).Trim
+                                AddRow4E_Inv(strDesc, "DOM", decMfNoVat, True, decVatMf, 10, "Lần", 1, intVatDiscount)
+                            End If
+                        Next
+                    End If
+                ElseIf .Cells("SRV").Value = "R" Then
+                    Dim intMultiplier As Integer = -1
+                    If pblnTT78 Then
+                        Dim strAction As String = InputBox("Nhập R/C cho điều chỉnh Giảm(Hoàn giá vé và thuế)/Tăng(Thu phí)").ToUpper
+                        strDesc = "Hoàn vé máy bay"
+
+                        Dim objOriInv As DataRow
+                        objOriInv = GetOriginalInvBoth(mtblTkts.Rows(0)("Tkno"))
+                        If objOriInv IsNot Nothing Then
+                            If strAction = "R" Then
+                                mintAdjustType = 3
+                            ElseIf strAction = "C" Then
+                                mintAdjustType = 2
+                            End If
+                            LoadOriInvValues(objOriInv)
+                            mblnNoOriInv = NoOriInv(objOriInv("InvId"), objOriInv("TVC"))
+                        End If
+
+                        If strAction = "R" Then
+                            If .Cells("Fare").Value <> 0 Then
+                                strDesc = "Tiền hoàn vé máy bay"
+                                If mtblTkts.Rows.Count = 1 Then
+                                    Dim decVatable As Decimal
+                                    Dim decVatFtc As Decimal
+                                    strDesc = strDesc & "||" & mtblTkts.Rows(0)("Tkno") _
+                                        & "||" & ConvertItinerary4FullName(mtblTkts.Rows(0)("Itinerary")) _
+                                        & "||" & mtblTkts.Rows(0)("PaxName") & "||Ngày đi: " & Format(mtblTkts.Rows(0)("DOF"), "dd-MMM-yy")
+                                    If Not IsDBNull(mtblTkts.Rows(0)("ReturnDate")) AndAlso Trim(CStr(mtblTkts.Rows(0)("Itinerary"))).Split(" ").Length > 3 Then
+                                        strDesc &= "||Ngày về: " & Format(mtblTkts.Rows(0)("ReturnDate"), "dd-MMM-yy")
+                                    End If
+                                    decVatable = Math.Round((.Cells("Fare").Value + .Cells("UE").Value) * 100 / (100 + intVatPct4Fare)) +
+                                                 Math.Round(.Cells("Tax").Value * 100 / (100 + intVatPct4Fare))
+                                    decVatFtc = (.Cells("Fare").Value + .Cells("Tax").Value + .Cells("UE").Value) - decVatable
+                                    AddRow4E_Inv(strDesc, strDomInt, decVatable, True _
+                                                         , decVatFtc,, "Vé", 1,)
+                                Else
+                                    strDesc = strDesc & " " & txtPeriod.Text
+                                    AddRow4E_Inv(strDesc, strDomInt, .Cells("Fare").Value, True _
+                                                         , .Cells("UE").Value,, "Vé", 1,)
+                                End If
+                                If .Cells("MerchantFee").Value <> 0 Then
+                                    Dim decMfNoVat As Decimal = RoundNearest(.Cells("MerchantFee").Value * 100 / 110)
+                                    Dim decVatMf As Decimal = .Cells("MerchantFee").Value - decMfNoVat
+                                    strDesc = "Tiền hoàn phí cà thẻ"
+                                    AddRow4E_Inv(strDesc, "DOM", decMfNoVat, True, decVatMf, 10, "Lần", 1, intVatDiscount)
+                                End If
+                            End If
+                        ElseIf strAction = "C" Then
+                            Dim strTktInfo As String = "||" & mtblTkts.Rows(0)("Tkno") _
+                                        & "||" & ConvertItinerary4FullName(mtblTkts.Rows(0)("Itinerary")) _
+                                        & "||" & mtblTkts.Rows(0)("PaxName")
+                            blnGetCharge = GetThisTransaction(0, -1)
+                            If blnGetCharge AndAlso .Cells("Charge").Value <> 0 Then
+                                strDesc = "Phí hoàn vé" & strTktInfo & "||Ngày đi: " & Format(mtblTkts.Rows(0)("DOF"), "dd-MMM-yy")
+                                If Not IsDBNull(mtblTkts.Rows(0)("ReturnDate")) AndAlso Trim(CStr(mtblTkts.Rows(0)("Itinerary"))).Split(" ").Length > 3 Then
+                                    strDesc &= "||Ngày về: " & Format(mtblTkts.Rows(0)("ReturnDate"), "dd-MMM-yy")
+                                End If
+                                AddRow4E_Inv(strDesc, "INT", .Cells("Charge").Value, False, 0, -1, "Lần", 1,)
+                            End If
+
+                            If blnGetSf AndAlso .Cells("ServiceFee").Value <> 0 Then
+                                strDesc = "Phần thu dịch vụ hoàn vé" & strTktInfo
+                                AddRow4E_Inv(strDesc, "DOM", .Cells("ServiceFee").Value, False, 0,, "Lần", 1, intVatDiscount)
+                            End If
+                        End If
+                    Else
+                        If .Cells("Charge").Value <> 0 Then
+                            strDesc = "Phí hoàn vé"
+                            AddRow4E_Inv(strDesc, "INT", .Cells("Charge").Value * intMultiplier, False, 0, -1,,,)
+                        End If
+
+                        If blnGetSf AndAlso .Cells("ServiceFee").Value <> 0 Then
+                            strDesc = "Phần thu dịch vụ hoàn vé"
+                            AddRow4E_Inv(strDesc, "DOM", .Cells("ServiceFee").Value, False, 0,, "Lần",, intVatDiscount)
+                        End If
+
+                    End If
+                End If
+
+                FormatGridSumAir()
+
+            ElseIf strProduct = "N-A" Then
+                cboSRV.SelectedIndex = cboSRV.FindStringExact("S")
+            End If
+        End With
+        RefreshGUI()
+        Return True
+    End Function
+    '^_^20230217 add by 7643 -e-
+
     '^_^20220822 mark by 7643 -b-
     'Private Function DraftAirTemplate2(objSumRow As DataGridViewRow, strProduct As String _
     '                                , strDomInt As String, intVatDiscount As Integer) As Boolean
@@ -5039,12 +5242,6 @@ Public Class frmE_InvEdit
                             & "||" & ConvertItinerary4FullName(objTktRow("Itinerary")) _
                             & "||" & objTktRow("PaxName")
                             '^_^20220809 modi by 7643 -e-
-
-                            '^_^20230217 add by 7643 -b-
-                            If txtCustId.Text = "91881" Then
-                                strDesc &= "||Ngày đi: " & Format(objTktRow("DOF"), "dd-MMM-yy") & "||Ngày về: " & Format(objTktRow("ReturnDate"), "dd-MMM-yy")
-                            End If
-                            '^_^20230217 add by 7643 -e-
 
                             If objTktRow("Fare") + objTktRow("Tax") + objTktRow("Charge") = 0 Then
                                 strTkno4Sf = objTktRow("Tkno")
@@ -5187,13 +5384,6 @@ Public Class frmE_InvEdit
                                         & "||" & ConvertItinerary4FullName(mtblTkts.Rows(0)("Itinerary")) _
                                         & "||" & mtblTkts.Rows(0)("PaxName")
 
-                                    '^_^20230217 add by 7643 -b-
-                                    If txtCustId.Text = "91881" Then
-                                        strDesc &= "||Ngày đi: " & Format(mtblTkts.Rows(0)("DOF"), "dd-MMM-yy") &
-                                                   "||Ngày về: " & Format(mtblTkts.Rows(0)("ReturnDate"), "dd-MMM-yy")
-                                    End If
-                                    '^_^20230217 add by 7643 -e-
-
                                     '^_^20221119 mark by 7643 -b-
                                     'decVatable = Math.Round(.Cells("Fare").Value * 100 / (100 + intVatPct4Fare)) +
                                     '             Math.Round(.Cells("Tax").Value * 100 / (100 + intVatPct4Fare)) +
@@ -5225,13 +5415,6 @@ Public Class frmE_InvEdit
                             blnGetCharge = GetThisTransaction(0, -1)
                             If blnGetCharge AndAlso .Cells("Charge").Value <> 0 Then
                                 strDesc = "Phí hoàn vé" & strTktInfo
-
-                                '^_^20230217 add by 7643 -b-
-                                If txtCustId.Text = "91881" Then
-                                    strDesc &= "||Ngày đi: " & Format(mtblTkts.Rows(0)("DOF"), "dd-MMM-yy") &
-                                               "||Ngày về: " & Format(mtblTkts.Rows(0)("ReturnDate"), "dd-MMM-yy")
-                                End If
-                                '^_^20230217 add by 7643 -e-
 
                                 AddRow4E_Inv(strDesc, "INT", .Cells("Charge").Value, False, 0, -1, "Lần", 1,)
                             End If

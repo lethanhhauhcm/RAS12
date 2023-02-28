@@ -1,4 +1,13 @@
+Imports System.Linq
+
 Module mdlLocalCorp
+    Public Structure ApplyTo
+        Const ALL As String = "ALL"
+        Const AIR As String = "AIR"
+        Const HTL As String = "HTL"
+        Const CAR As String = "CAR"
+        Const NonAir As String = "N-A"
+    End Structure
     Public Sub AddRequiredDataFields(ByVal colData As Collection, ByVal strMandatory As String _
                             , ByVal intCustId As Integer, ByVal flpRequiredData As FlowLayoutPanel)
 
@@ -174,7 +183,7 @@ Module mdlLocalCorp
         Return strTripType
     End Function
     Public Function GetRoutingType4Hunstman(ByVal arrDepApts() As String, ByVal arrArrApts() As String, arrCars() As String) As String
-        
+
         Dim i As Integer
         Dim strFirstCountry As String
         Dim strLastCountry As String
@@ -250,6 +259,58 @@ Module mdlLocalCorp
 
             Return Mid(strResult, 1, strResult.Length - 1)
         End If
+    End Function
+    Public Function CheckAllRptData(intCustId As Integer, frmContainer As Form) As Boolean
+        Dim tblRptDataNeeeded As DataTable
+
+        tblRptDataNeeeded = GetDataTable("select * from RptData " _
+                                         & " where Status='OK' and Mandatory='M' and CustId=" & intCustId _
+                                         & " and ApplyTo in ('ALL','AIR')")
+        For Each objRow As DataRow In tblRptDataNeeeded.Rows
+            If Not CheckEachRptData(objRow, frmContainer) Then
+                Return False
+            End If
+        Next
+        Return True
+    End Function
+    Private Function CheckEachRptData(objRow As DataRow, frmContainer As Form) As Boolean
+        Dim objRptData As RichTextBox = frmContainer.Controls.Find("rtx" & objRow("DataCode"), True).FirstOrDefault()
+        Dim strCheckedValue As String = objRptData.Text
+        If objRow("MinLength") > strCheckedValue.Length Then
+            MsgBox("Invalid MinLength for " & objRow("NameByCustomer"))
+            objRptData.Focus()
+            Return False
+        ElseIf objRow("MaxLength") < strCheckedValue.Length Then
+            MsgBox("Invalid MaxLength for " & objRow("NameByCustomer"))
+            objRptData.Focus()
+            Return False
+        ElseIf objRow("CharType") = "NUMERIC" AndAlso Not IsNumeric(strCheckedValue) Then
+            MsgBox(objRow("NameByCustomer") & " must be Numeric!")
+            objRptData.Focus()
+            Return False
+        ElseIf objRow("CheckValues") _
+            AndAlso ScalarToInt("RptDataValues", "top 1RecId", "Status='OK' and DataCode='" _
+            & objRow("DataCode") _
+            & "' and CustId=" & objRow("CustId") & " And Value='" & strCheckedValue & "'") < 0 Then
+            MsgBox(objRow("NameByCustomer") & " must be Numeric!")
+            objRptData.Focus()
+            Return False
+        End If
+        Return True
+    End Function
+    Public Function ShowAllRptData(intCustId As Integer, frmContainer As Form _
+                                   , strApplyTo As String) As Boolean
+        Dim tblRptDataNeeeded As DataTable
+
+        tblRptDataNeeeded = GetDataTable("select * from RptData " _
+                                         & " where Status='OK' and CustId=" & intCustId _
+                                         & " and ApplyTo in ('ALL','" & strApplyTo & "')")
+        For Each objRow As DataRow In tblRptDataNeeeded.Rows
+            frmContainer.Controls.Find("lbl" & objRow("DataCode"), True).FirstOrDefault.Text = objRow("NameByCustomer")
+            frmContainer.Controls.Find("lbl" & objRow("DataCode"), True).FirstOrDefault.Visible = True
+            frmContainer.Controls.Find("rtx" & objRow("DataCode"), True).FirstOrDefault.Visible = True
+        Next
+        Return True
     End Function
     'Public Function GetTs24SfTextByPaxType(lstTs24Sfs As List(Of clsTs24Sf), strPaxType As String)
     '    Dim strResult As String = String.Empty

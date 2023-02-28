@@ -2261,6 +2261,25 @@ ResumeHere:
     Private Sub barNoMXP_Click(sender As Object, e As EventArgs) Handles barNoMXP.Click
         frmFrieslandNoMXP.ShowDialog()
     End Sub
+
+    Private Sub BarEditRptData_Click(sender As Object, e As EventArgs) Handles BarEditRptData.Click
+        Dim f As Form, RCP As String, b As ToolStripItem = CType(sender, ToolStripItem)
+        For Each f In Application.OpenForms
+            If f.GetType.Name = "FOissueTKT" Then
+                f.Activate()
+                Exit Sub
+            End If
+        Next
+        RCP = InputBox("Enter Transaction Confirmation Number:", msgTitle).Trim.ToUpper
+        If RCP = "" Then Exit Sub
+
+        f = New FOissueTKT(b.Tag & "_" & RCP)
+        f.ShowDialog()
+    End Sub
+
+    Private Sub barRptData_Click(sender As Object, e As EventArgs) Handles barRptData.Click
+        frmRptDataList.ShowDialog()
+    End Sub
 End Class
 
 

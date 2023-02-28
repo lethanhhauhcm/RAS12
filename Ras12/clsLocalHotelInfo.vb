@@ -38,6 +38,9 @@
                 Else
                     mstrRoomType = "C2T"
                 End If
+            Case "TRPL"
+                mstrRoomType = "CA3"
+
         End Select
 
         mdteCheckInDate = CDate(arrSplit(2))

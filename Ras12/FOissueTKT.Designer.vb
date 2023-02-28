@@ -1,9 +1,9 @@
-<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class FOissueTKT
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         If disposing AndAlso components IsNot Nothing Then
             components.Dispose()
@@ -17,7 +17,7 @@ Partial Class FOissueTKT
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
@@ -28,14 +28,6 @@ Partial Class FOissueTKT
         Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.pStep1 = New System.Windows.Forms.TabPage()
-        Me.GrpSearch = New System.Windows.Forms.GroupBox()
-        Me.CmbSearchWhat = New System.Windows.Forms.ComboBox()
-        Me.CmdSearch = New System.Windows.Forms.Button()
-        Me.LstTKTinRCP = New System.Windows.Forms.CheckedListBox()
-        Me.Label15 = New System.Windows.Forms.Label()
-        Me.Label61 = New System.Windows.Forms.Label()
-        Me.CmdRVSelected = New System.Windows.Forms.Button()
-        Me.txtValueToSearch = New System.Windows.Forms.TextBox()
         Me.grbInternal = New System.Windows.Forms.GroupBox()
         Me.Label14 = New System.Windows.Forms.Label()
         Me.Label13 = New System.Windows.Forms.Label()
@@ -91,6 +83,14 @@ Partial Class FOissueTKT
         Me.txtCustName = New System.Windows.Forms.TextBox()
         Me.GrpAmountInVND = New System.Windows.Forms.GroupBox()
         Me.LblVNDEquivalent = New System.Windows.Forms.Label()
+        Me.GrpSearch = New System.Windows.Forms.GroupBox()
+        Me.CmbSearchWhat = New System.Windows.Forms.ComboBox()
+        Me.CmdSearch = New System.Windows.Forms.Button()
+        Me.LstTKTinRCP = New System.Windows.Forms.CheckedListBox()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.Label61 = New System.Windows.Forms.Label()
+        Me.CmdRVSelected = New System.Windows.Forms.Button()
+        Me.txtValueToSearch = New System.Windows.Forms.TextBox()
         Me.txtVNDEquivalent = New System.Windows.Forms.TextBox()
         Me.TxtPaid = New System.Windows.Forms.TextBox()
         Me.Label45 = New System.Windows.Forms.Label()
@@ -309,12 +309,20 @@ Partial Class FOissueTKT
         Me.Label1 = New System.Windows.Forms.Label()
         Me.cmbRSaving_HTL = New System.Windows.Forms.ComboBox()
         Me.Label23 = New System.Windows.Forms.Label()
+        Me.tabRptData = New System.Windows.Forms.TabPage()
+        Me.lbkSaveRptData = New System.Windows.Forms.LinkLabel()
+        Me.lblRptData3 = New System.Windows.Forms.Label()
+        Me.rtxRptData3 = New System.Windows.Forms.RichTextBox()
+        Me.lblRptData2 = New System.Windows.Forms.Label()
+        Me.rtxRptData2 = New System.Windows.Forms.RichTextBox()
+        Me.lblRptData1 = New System.Windows.Forms.Label()
+        Me.rtxRptData1 = New System.Windows.Forms.RichTextBox()
         Me.StatusBar = New System.Windows.Forms.StatusStrip()
         Me.StatusCounter = New System.Windows.Forms.ToolStripStatusLabel()
         Me.StatusSRV = New System.Windows.Forms.ToolStripStatusLabel()
         Me.StatusFeedBack = New System.Windows.Forms.ToolStripStatusLabel()
         Me.TxtTRXNO = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.statusTRXNoLebel = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.statusTRXNoLabel = New System.Windows.Forms.ToolStripStatusLabel()
         Me.MenuStrip2 = New System.Windows.Forms.MenuStrip()
         Me.PadClose = New System.Windows.Forms.ToolStripMenuItem()
         Me.BarRQ4CRDExt = New System.Windows.Forms.ToolStripMenuItem()
@@ -335,7 +343,6 @@ Partial Class FOissueTKT
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
         Me.TabControl1.SuspendLayout()
         Me.pStep1.SuspendLayout()
-        Me.GrpSearch.SuspendLayout()
         Me.grbInternal.SuspendLayout()
         CType(Me.GridPendingRQ, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox1.SuspendLayout()
@@ -344,6 +351,7 @@ Partial Class FOissueTKT
         Me.GrpSRV.SuspendLayout()
         Me.GrpPrintedCust.SuspendLayout()
         Me.GrpAmountInVND.SuspendLayout()
+        Me.GrpSearch.SuspendLayout()
         Me.GrpNewRCP.SuspendLayout()
         Me.pStep2.SuspendLayout()
         Me.PnlAutoTKT.SuspendLayout()
@@ -356,6 +364,7 @@ Partial Class FOissueTKT
         Me.GrpCharge.SuspendLayout()
         Me.GrpFTKT2Edit.SuspendLayout()
         Me.GrpReasonCode.SuspendLayout()
+        Me.tabRptData.SuspendLayout()
         Me.StatusBar.SuspendLayout()
         Me.MenuStrip2.SuspendLayout()
         Me.SuspendLayout()
@@ -365,6 +374,7 @@ Partial Class FOissueTKT
         Me.TabControl1.Alignment = System.Windows.Forms.TabAlignment.Bottom
         Me.TabControl1.Controls.Add(Me.pStep1)
         Me.TabControl1.Controls.Add(Me.pStep2)
+        Me.TabControl1.Controls.Add(Me.tabRptData)
         Me.TabControl1.Location = New System.Drawing.Point(-2, 25)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.RightToLeftLayout = True
@@ -375,7 +385,6 @@ Partial Class FOissueTKT
         'pStep1
         '
         Me.pStep1.Controls.Add(Me.grbInternal)
-        Me.pStep1.Controls.Add(Me.GrpSearch)
         Me.pStep1.Controls.Add(Me.lbkSend2TVSGN)
         Me.pStep1.Controls.Add(Me.lbkSelectAcrAct)
         Me.pStep1.Controls.Add(Me.lbkCreateE_Inv)
@@ -398,90 +407,6 @@ Partial Class FOissueTKT
         Me.pStep1.TabIndex = 2
         Me.pStep1.Text = "TRX"
         Me.pStep1.UseVisualStyleBackColor = True
-        '
-        'GrpSearch
-        '
-        Me.GrpSearch.Controls.Add(Me.CmbSearchWhat)
-        Me.GrpSearch.Controls.Add(Me.CmdSearch)
-        Me.GrpSearch.Controls.Add(Me.LstTKTinRCP)
-        Me.GrpSearch.Controls.Add(Me.Label15)
-        Me.GrpSearch.Controls.Add(Me.Label61)
-        Me.GrpSearch.Controls.Add(Me.CmdRVSelected)
-        Me.GrpSearch.Controls.Add(Me.txtValueToSearch)
-        Me.GrpSearch.Location = New System.Drawing.Point(3, 119)
-        Me.GrpSearch.Name = "GrpSearch"
-        Me.GrpSearch.Size = New System.Drawing.Size(307, 182)
-        Me.GrpSearch.TabIndex = 2
-        Me.GrpSearch.TabStop = False
-        Me.GrpSearch.Text = "Search"
-        Me.GrpSearch.Visible = False
-        '
-        'CmbSearchWhat
-        '
-        Me.CmbSearchWhat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.CmbSearchWhat.FormattingEnabled = True
-        Me.CmbSearchWhat.Items.AddRange(New Object() {"TRX No.", "TKT No."})
-        Me.CmbSearchWhat.Location = New System.Drawing.Point(156, 29)
-        Me.CmbSearchWhat.Name = "CmbSearchWhat"
-        Me.CmbSearchWhat.Size = New System.Drawing.Size(89, 21)
-        Me.CmbSearchWhat.TabIndex = 25
-        '
-        'CmdSearch
-        '
-        Me.CmdSearch.Location = New System.Drawing.Point(245, 29)
-        Me.CmdSearch.Name = "CmdSearch"
-        Me.CmdSearch.Size = New System.Drawing.Size(57, 22)
-        Me.CmdSearch.TabIndex = 2
-        Me.CmdSearch.Text = "&Search"
-        Me.CmdSearch.UseVisualStyleBackColor = True
-        '
-        'LstTKTinRCP
-        '
-        Me.LstTKTinRCP.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.LstTKTinRCP.CheckOnClick = True
-        Me.LstTKTinRCP.FormattingEnabled = True
-        Me.LstTKTinRCP.Location = New System.Drawing.Point(5, 29)
-        Me.LstTKTinRCP.Name = "LstTKTinRCP"
-        Me.LstTKTinRCP.Size = New System.Drawing.Size(148, 124)
-        Me.LstTKTinRCP.TabIndex = 3
-        '
-        'Label15
-        '
-        Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(3, 13)
-        Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(112, 13)
-        Me.Label15.TabIndex = 24
-        Me.Label15.Text = "Tickets in Transaction"
-        '
-        'Label61
-        '
-        Me.Label61.AutoSize = True
-        Me.Label61.Location = New System.Drawing.Point(87, -50)
-        Me.Label61.Name = "Label61"
-        Me.Label61.Size = New System.Drawing.Size(99, 13)
-        Me.Label61.TabIndex = 23
-        Me.Label61.Text = "Receipt/Ticket No."
-        '
-        'CmdRVSelected
-        '
-        Me.CmdRVSelected.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.CmdRVSelected.Enabled = False
-        Me.CmdRVSelected.Location = New System.Drawing.Point(156, 155)
-        Me.CmdRVSelected.Name = "CmdRVSelected"
-        Me.CmdRVSelected.Size = New System.Drawing.Size(146, 23)
-        Me.CmdRVSelected.TabIndex = 4
-        Me.CmdRVSelected.Text = "Get Selected Tickets"
-        Me.CmdRVSelected.UseVisualStyleBackColor = True
-        '
-        'txtValueToSearch
-        '
-        Me.txtValueToSearch.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
-        Me.txtValueToSearch.Location = New System.Drawing.Point(156, 53)
-        Me.txtValueToSearch.Name = "txtValueToSearch"
-        Me.txtValueToSearch.Size = New System.Drawing.Size(146, 20)
-        Me.txtValueToSearch.TabIndex = 1
         '
         'grbInternal
         '
@@ -1070,6 +995,7 @@ Partial Class FOissueTKT
         'GrpAmountInVND
         '
         Me.GrpAmountInVND.Controls.Add(Me.LblVNDEquivalent)
+        Me.GrpAmountInVND.Controls.Add(Me.GrpSearch)
         Me.GrpAmountInVND.Controls.Add(Me.txtVNDEquivalent)
         Me.GrpAmountInVND.Controls.Add(Me.TxtPaid)
         Me.GrpAmountInVND.Controls.Add(Me.Label45)
@@ -1111,6 +1037,90 @@ Partial Class FOissueTKT
         Me.LblVNDEquivalent.Size = New System.Drawing.Size(83, 13)
         Me.LblVNDEquivalent.TabIndex = 18
         Me.LblVNDEquivalent.Text = "VND Equivalent"
+        '
+        'GrpSearch
+        '
+        Me.GrpSearch.Controls.Add(Me.CmbSearchWhat)
+        Me.GrpSearch.Controls.Add(Me.CmdSearch)
+        Me.GrpSearch.Controls.Add(Me.LstTKTinRCP)
+        Me.GrpSearch.Controls.Add(Me.Label15)
+        Me.GrpSearch.Controls.Add(Me.Label61)
+        Me.GrpSearch.Controls.Add(Me.CmdRVSelected)
+        Me.GrpSearch.Controls.Add(Me.txtValueToSearch)
+        Me.GrpSearch.Location = New System.Drawing.Point(31, 109)
+        Me.GrpSearch.Name = "GrpSearch"
+        Me.GrpSearch.Size = New System.Drawing.Size(307, 182)
+        Me.GrpSearch.TabIndex = 2
+        Me.GrpSearch.TabStop = False
+        Me.GrpSearch.Text = "Search"
+        Me.GrpSearch.Visible = False
+        '
+        'CmbSearchWhat
+        '
+        Me.CmbSearchWhat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CmbSearchWhat.FormattingEnabled = True
+        Me.CmbSearchWhat.Items.AddRange(New Object() {"TRX No.", "TKT No."})
+        Me.CmbSearchWhat.Location = New System.Drawing.Point(156, 29)
+        Me.CmbSearchWhat.Name = "CmbSearchWhat"
+        Me.CmbSearchWhat.Size = New System.Drawing.Size(89, 21)
+        Me.CmbSearchWhat.TabIndex = 25
+        '
+        'CmdSearch
+        '
+        Me.CmdSearch.Location = New System.Drawing.Point(245, 29)
+        Me.CmdSearch.Name = "CmdSearch"
+        Me.CmdSearch.Size = New System.Drawing.Size(57, 22)
+        Me.CmdSearch.TabIndex = 2
+        Me.CmdSearch.Text = "&Search"
+        Me.CmdSearch.UseVisualStyleBackColor = True
+        '
+        'LstTKTinRCP
+        '
+        Me.LstTKTinRCP.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.LstTKTinRCP.CheckOnClick = True
+        Me.LstTKTinRCP.FormattingEnabled = True
+        Me.LstTKTinRCP.Location = New System.Drawing.Point(5, 29)
+        Me.LstTKTinRCP.Name = "LstTKTinRCP"
+        Me.LstTKTinRCP.Size = New System.Drawing.Size(148, 124)
+        Me.LstTKTinRCP.TabIndex = 3
+        '
+        'Label15
+        '
+        Me.Label15.AutoSize = True
+        Me.Label15.Location = New System.Drawing.Point(3, 13)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(112, 13)
+        Me.Label15.TabIndex = 24
+        Me.Label15.Text = "Tickets in Transaction"
+        '
+        'Label61
+        '
+        Me.Label61.AutoSize = True
+        Me.Label61.Location = New System.Drawing.Point(87, -50)
+        Me.Label61.Name = "Label61"
+        Me.Label61.Size = New System.Drawing.Size(99, 13)
+        Me.Label61.TabIndex = 23
+        Me.Label61.Text = "Receipt/Ticket No."
+        '
+        'CmdRVSelected
+        '
+        Me.CmdRVSelected.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.CmdRVSelected.Enabled = False
+        Me.CmdRVSelected.Location = New System.Drawing.Point(156, 155)
+        Me.CmdRVSelected.Name = "CmdRVSelected"
+        Me.CmdRVSelected.Size = New System.Drawing.Size(146, 23)
+        Me.CmdRVSelected.TabIndex = 4
+        Me.CmdRVSelected.Text = "Get Selected Tickets"
+        Me.CmdRVSelected.UseVisualStyleBackColor = True
+        '
+        'txtValueToSearch
+        '
+        Me.txtValueToSearch.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
+        Me.txtValueToSearch.Location = New System.Drawing.Point(156, 53)
+        Me.txtValueToSearch.Name = "txtValueToSearch"
+        Me.txtValueToSearch.Size = New System.Drawing.Size(146, 20)
+        Me.txtValueToSearch.TabIndex = 1
         '
         'txtVNDEquivalent
         '
@@ -3347,9 +3357,92 @@ Partial Class FOissueTKT
         Me.Label23.TabIndex = 4
         Me.Label23.Text = "R"
         '
+        'tabRptData
+        '
+        Me.tabRptData.Controls.Add(Me.lbkSaveRptData)
+        Me.tabRptData.Controls.Add(Me.lblRptData3)
+        Me.tabRptData.Controls.Add(Me.rtxRptData3)
+        Me.tabRptData.Controls.Add(Me.lblRptData2)
+        Me.tabRptData.Controls.Add(Me.rtxRptData2)
+        Me.tabRptData.Controls.Add(Me.lblRptData1)
+        Me.tabRptData.Controls.Add(Me.rtxRptData1)
+        Me.tabRptData.Location = New System.Drawing.Point(4, 4)
+        Me.tabRptData.Name = "tabRptData"
+        Me.tabRptData.Size = New System.Drawing.Size(992, 524)
+        Me.tabRptData.TabIndex = 3
+        Me.tabRptData.Text = "RptData"
+        Me.tabRptData.UseVisualStyleBackColor = True
+        '
+        'lbkSaveRptData
+        '
+        Me.lbkSaveRptData.AutoSize = True
+        Me.lbkSaveRptData.Location = New System.Drawing.Point(491, 399)
+        Me.lbkSaveRptData.Name = "lbkSaveRptData"
+        Me.lbkSaveRptData.Size = New System.Drawing.Size(72, 13)
+        Me.lbkSaveRptData.TabIndex = 59
+        Me.lbkSaveRptData.TabStop = True
+        Me.lbkSaveRptData.Text = "SaveRptData"
+        '
+        'lblRptData3
+        '
+        Me.lblRptData3.AutoSize = True
+        Me.lblRptData3.Location = New System.Drawing.Point(7, 269)
+        Me.lblRptData3.Name = "lblRptData3"
+        Me.lblRptData3.Size = New System.Drawing.Size(53, 13)
+        Me.lblRptData3.TabIndex = 58
+        Me.lblRptData3.Text = "RptData3"
+        Me.lblRptData3.Visible = False
+        '
+        'rtxRptData3
+        '
+        Me.rtxRptData3.Location = New System.Drawing.Point(10, 285)
+        Me.rtxRptData3.Name = "rtxRptData3"
+        Me.rtxRptData3.Size = New System.Drawing.Size(563, 111)
+        Me.rtxRptData3.TabIndex = 57
+        Me.rtxRptData3.Text = ""
+        Me.rtxRptData3.Visible = False
+        '
+        'lblRptData2
+        '
+        Me.lblRptData2.AutoSize = True
+        Me.lblRptData2.Location = New System.Drawing.Point(7, 137)
+        Me.lblRptData2.Name = "lblRptData2"
+        Me.lblRptData2.Size = New System.Drawing.Size(53, 13)
+        Me.lblRptData2.TabIndex = 56
+        Me.lblRptData2.Text = "RptData2"
+        Me.lblRptData2.Visible = False
+        '
+        'rtxRptData2
+        '
+        Me.rtxRptData2.Location = New System.Drawing.Point(10, 153)
+        Me.rtxRptData2.Name = "rtxRptData2"
+        Me.rtxRptData2.Size = New System.Drawing.Size(563, 111)
+        Me.rtxRptData2.TabIndex = 55
+        Me.rtxRptData2.Text = ""
+        Me.rtxRptData2.Visible = False
+        '
+        'lblRptData1
+        '
+        Me.lblRptData1.AutoSize = True
+        Me.lblRptData1.Location = New System.Drawing.Point(7, 5)
+        Me.lblRptData1.Name = "lblRptData1"
+        Me.lblRptData1.Size = New System.Drawing.Size(53, 13)
+        Me.lblRptData1.TabIndex = 54
+        Me.lblRptData1.Text = "RptData1"
+        Me.lblRptData1.Visible = False
+        '
+        'rtxRptData1
+        '
+        Me.rtxRptData1.Location = New System.Drawing.Point(10, 21)
+        Me.rtxRptData1.Name = "rtxRptData1"
+        Me.rtxRptData1.Size = New System.Drawing.Size(563, 111)
+        Me.rtxRptData1.TabIndex = 53
+        Me.rtxRptData1.Text = ""
+        Me.rtxRptData1.Visible = False
+        '
         'StatusBar
         '
-        Me.StatusBar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusCounter, Me.StatusSRV, Me.StatusFeedBack, Me.TxtTRXNO, Me.statusTRXNoLebel})
+        Me.StatusBar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusCounter, Me.StatusSRV, Me.StatusFeedBack, Me.TxtTRXNO, Me.statusTRXNoLabel})
         Me.StatusBar.Location = New System.Drawing.Point(0, 589)
         Me.StatusBar.Name = "StatusBar"
         Me.StatusBar.RightToLeft = System.Windows.Forms.RightToLeft.Yes
@@ -3383,12 +3476,12 @@ Partial Class FOissueTKT
         Me.TxtTRXNO.Name = "TxtTRXNO"
         Me.TxtTRXNO.Size = New System.Drawing.Size(0, 17)
         '
-        'statusTRXNoLebel
+        'statusTRXNoLabel
         '
-        Me.statusTRXNoLebel.Name = "statusTRXNoLebel"
-        Me.statusTRXNoLebel.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.statusTRXNoLebel.Size = New System.Drawing.Size(49, 17)
-        Me.statusTRXNoLebel.Text = "TRX No."
+        Me.statusTRXNoLabel.Name = "statusTRXNoLabel"
+        Me.statusTRXNoLabel.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.statusTRXNoLabel.Size = New System.Drawing.Size(49, 17)
+        Me.statusTRXNoLabel.Text = "TRX No."
         '
         'MenuStrip2
         '
@@ -3523,8 +3616,6 @@ Partial Class FOissueTKT
         Me.TabControl1.ResumeLayout(False)
         Me.pStep1.ResumeLayout(False)
         Me.pStep1.PerformLayout()
-        Me.GrpSearch.ResumeLayout(False)
-        Me.GrpSearch.PerformLayout()
         Me.grbInternal.ResumeLayout(False)
         Me.grbInternal.PerformLayout()
         CType(Me.GridPendingRQ, System.ComponentModel.ISupportInitialize).EndInit()
@@ -3538,6 +3629,8 @@ Partial Class FOissueTKT
         Me.GrpPrintedCust.PerformLayout()
         Me.GrpAmountInVND.ResumeLayout(False)
         Me.GrpAmountInVND.PerformLayout()
+        Me.GrpSearch.ResumeLayout(False)
+        Me.GrpSearch.PerformLayout()
         Me.GrpNewRCP.ResumeLayout(False)
         Me.GrpNewRCP.PerformLayout()
         Me.pStep2.ResumeLayout(False)
@@ -3560,6 +3653,8 @@ Partial Class FOissueTKT
         Me.GrpFTKT2Edit.PerformLayout()
         Me.GrpReasonCode.ResumeLayout(False)
         Me.GrpReasonCode.PerformLayout()
+        Me.tabRptData.ResumeLayout(False)
+        Me.tabRptData.PerformLayout()
         Me.StatusBar.ResumeLayout(False)
         Me.StatusBar.PerformLayout()
         Me.MenuStrip2.ResumeLayout(False)
@@ -3759,7 +3854,7 @@ Partial Class FOissueTKT
     Friend WithEvents CmbCCurr1 As System.Windows.Forms.ComboBox
     Friend WithEvents BarALLPendingRQ As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents Label3 As System.Windows.Forms.Label
-    Friend WithEvents statusTRXNoLebel As System.Windows.Forms.ToolStripStatusLabel
+    Friend WithEvents statusTRXNoLabel As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents TxtTRXNO As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents CmbHTLName As System.Windows.Forms.ComboBox
     Friend WithEvents TxtCountry As System.Windows.Forms.TextBox
@@ -3875,4 +3970,12 @@ Partial Class FOissueTKT
     Friend WithEvents Email As DataGridViewTextBoxColumn
     Friend WithEvents VatInfoID As DataGridViewTextBoxColumn
     Friend WithEvents TktIssuedBy As DataGridViewTextBoxColumn
+    Friend WithEvents tabRptData As TabPage
+    Friend WithEvents lblRptData3 As Label
+    Friend WithEvents rtxRptData3 As RichTextBox
+    Friend WithEvents lblRptData2 As Label
+    Friend WithEvents rtxRptData2 As RichTextBox
+    Friend WithEvents lblRptData1 As Label
+    Friend WithEvents rtxRptData1 As RichTextBox
+    Friend WithEvents lbkSaveRptData As LinkLabel
 End Class

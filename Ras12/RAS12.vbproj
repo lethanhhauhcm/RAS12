@@ -709,6 +709,30 @@
     <Compile Include="frmRequiredDataValueEdit.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="frmRptDataEdit.Designer.vb">
+      <DependentUpon>frmRptDataEdit.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmRptDataEdit.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmRptDataList.Designer.vb">
+      <DependentUpon>frmRptDataList.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmRptDataList.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmRptDataValueEdit.Designer.vb">
+      <DependentUpon>frmRptDataValueEdit.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmRptDataValueEdit.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmRptDataValuesList.Designer.vb">
+      <DependentUpon>frmRptDataValuesList.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmRptDataValuesList.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="frmRtgTypeEdit.Designer.vb">
       <DependentUpon>frmRtgTypeEdit.vb</DependentUpon>
     </Compile>
@@ -1684,6 +1708,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmRequiredDataValueEdit.resx">
       <DependentUpon>frmRequiredDataValueEdit.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmRptDataEdit.resx">
+      <DependentUpon>frmRptDataEdit.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmRptDataList.resx">
+      <DependentUpon>frmRptDataList.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmRptDataValueEdit.resx">
+      <DependentUpon>frmRptDataValueEdit.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmRptDataValuesList.resx">
+      <DependentUpon>frmRptDataValuesList.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmRtgTypeEdit.resx">
       <DependentUpon>frmRtgTypeEdit.vb</DependentUpon>

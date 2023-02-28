@@ -555,7 +555,7 @@ ErrHandler:
         Me.txtNewDescr.Enabled = False
         Me.txtNewAmt.Enabled = False
 
-        If Recno > 0 AndAlso myStaff.City = "SGN" AndAlso ("BTF_CSH").Contains(pFOP) _
+        If Recno > 0  AndAlso ("BTF_CSH").Contains(pFOP) _
             AndAlso Not strTrx_Tc.Contains("PPD: 4-TVS") Then
             If ScalarToInt("MISC", "RecId", "Status='OK' and CAT='VendorNameInGroup' and val='VENDOR NOT IMPORT AOP' and intVal=" _
                            & "(select PayeeAccountId from UNC_Payments where RecId=" & RQID & ")") = 0 _

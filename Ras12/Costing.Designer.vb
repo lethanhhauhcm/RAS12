@@ -21,6 +21,7 @@ Partial Class Costing
     Private Sub InitializeComponent()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.chkManualSF = New System.Windows.Forms.CheckBox()
         Me.txtVatPct = New System.Windows.Forms.TextBox()
         Me.Label25 = New System.Windows.Forms.Label()
         Me.txtBooker = New System.Windows.Forms.TextBox()
@@ -215,6 +216,13 @@ Partial Class Costing
         Me.lbkViewStoredFile = New System.Windows.Forms.LinkLabel()
         Me.lbkStoreFile = New System.Windows.Forms.LinkLabel()
         Me.dgrStoredFile = New System.Windows.Forms.DataGridView()
+        Me.tabRptData = New System.Windows.Forms.TabPage()
+        Me.lblRptData3 = New System.Windows.Forms.Label()
+        Me.rtxRptData3 = New System.Windows.Forms.RichTextBox()
+        Me.lblRptData2 = New System.Windows.Forms.Label()
+        Me.rtxRptData2 = New System.Windows.Forms.RichTextBox()
+        Me.lblRptData1 = New System.Windows.Forms.Label()
+        Me.rtxRptData1 = New System.Windows.Forms.RichTextBox()
         Me.tabDNTT = New System.Windows.Forms.TabPage()
         Me.lbkViewAccount = New System.Windows.Forms.LinkLabel()
         Me.lbkRefreshPayment = New System.Windows.Forms.LinkLabel()
@@ -259,6 +267,7 @@ Partial Class Costing
         Me.lbkPush2Act = New System.Windows.Forms.LinkLabel()
         Me.lbkRejectByAct = New System.Windows.Forms.LinkLabel()
         Me.lbkQuotation = New System.Windows.Forms.LinkLabel()
+        Me.lbkSaveRptData = New System.Windows.Forms.LinkLabel()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.GridGO, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -280,6 +289,7 @@ Partial Class Costing
         CType(Me.dgTkt, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tabStoreFiles.SuspendLayout()
         CType(Me.dgrStoredFile, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tabRptData.SuspendLayout()
         Me.tabDNTT.SuspendLayout()
         CType(Me.dgrSumPaymentDue, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.dgrRequested, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -299,6 +309,7 @@ Partial Class Costing
         Me.TabControl1.Controls.Add(Me.TabPage6)
         Me.TabControl1.Controls.Add(Me.tabAirTkt)
         Me.TabControl1.Controls.Add(Me.tabStoreFiles)
+        Me.TabControl1.Controls.Add(Me.tabRptData)
         Me.TabControl1.Controls.Add(Me.tabDNTT)
         Me.TabControl1.Location = New System.Drawing.Point(431, -4)
         Me.TabControl1.Name = "TabControl1"
@@ -308,6 +319,7 @@ Partial Class Costing
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.chkManualSF)
         Me.TabPage1.Controls.Add(Me.txtVatPct)
         Me.TabPage1.Controls.Add(Me.Label25)
         Me.TabPage1.Controls.Add(Me.txtBooker)
@@ -364,6 +376,18 @@ Partial Class Costing
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Tour "
         Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'chkManualSF
+        '
+        Me.chkManualSF.AutoSize = True
+        Me.chkManualSF.Checked = True
+        Me.chkManualSF.CheckState = System.Windows.Forms.CheckState.Indeterminate
+        Me.chkManualSF.Location = New System.Drawing.Point(6, 203)
+        Me.chkManualSF.Name = "chkManualSF"
+        Me.chkManualSF.Size = New System.Drawing.Size(74, 17)
+        Me.chkManualSF.TabIndex = 68
+        Me.chkManualSF.Text = "ManualSF"
+        Me.chkManualSF.UseVisualStyleBackColor = True
         '
         'txtVatPct
         '
@@ -2378,6 +2402,73 @@ Partial Class Costing
         Me.dgrStoredFile.Size = New System.Drawing.Size(524, 217)
         Me.dgrStoredFile.TabIndex = 1
         '
+        'tabRptData
+        '
+        Me.tabRptData.Controls.Add(Me.lbkSaveRptData)
+        Me.tabRptData.Controls.Add(Me.lblRptData3)
+        Me.tabRptData.Controls.Add(Me.rtxRptData3)
+        Me.tabRptData.Controls.Add(Me.lblRptData2)
+        Me.tabRptData.Controls.Add(Me.rtxRptData2)
+        Me.tabRptData.Controls.Add(Me.lblRptData1)
+        Me.tabRptData.Controls.Add(Me.rtxRptData1)
+        Me.tabRptData.Location = New System.Drawing.Point(4, 22)
+        Me.tabRptData.Name = "tabRptData"
+        Me.tabRptData.Size = New System.Drawing.Size(569, 595)
+        Me.tabRptData.TabIndex = 9
+        Me.tabRptData.Text = "RptData"
+        Me.tabRptData.UseVisualStyleBackColor = True
+        '
+        'lblRptData3
+        '
+        Me.lblRptData3.AutoSize = True
+        Me.lblRptData3.Location = New System.Drawing.Point(3, 264)
+        Me.lblRptData3.Name = "lblRptData3"
+        Me.lblRptData3.Size = New System.Drawing.Size(53, 13)
+        Me.lblRptData3.TabIndex = 52
+        Me.lblRptData3.Text = "RptData3"
+        '
+        'rtxRptData3
+        '
+        Me.rtxRptData3.Location = New System.Drawing.Point(6, 280)
+        Me.rtxRptData3.Name = "rtxRptData3"
+        Me.rtxRptData3.Size = New System.Drawing.Size(563, 111)
+        Me.rtxRptData3.TabIndex = 51
+        Me.rtxRptData3.Text = ""
+        '
+        'lblRptData2
+        '
+        Me.lblRptData2.AutoSize = True
+        Me.lblRptData2.Location = New System.Drawing.Point(3, 132)
+        Me.lblRptData2.Name = "lblRptData2"
+        Me.lblRptData2.Size = New System.Drawing.Size(53, 13)
+        Me.lblRptData2.TabIndex = 50
+        Me.lblRptData2.Text = "RptData2"
+        '
+        'rtxRptData2
+        '
+        Me.rtxRptData2.Location = New System.Drawing.Point(6, 148)
+        Me.rtxRptData2.Name = "rtxRptData2"
+        Me.rtxRptData2.Size = New System.Drawing.Size(563, 111)
+        Me.rtxRptData2.TabIndex = 49
+        Me.rtxRptData2.Text = ""
+        '
+        'lblRptData1
+        '
+        Me.lblRptData1.AutoSize = True
+        Me.lblRptData1.Location = New System.Drawing.Point(3, 0)
+        Me.lblRptData1.Name = "lblRptData1"
+        Me.lblRptData1.Size = New System.Drawing.Size(53, 13)
+        Me.lblRptData1.TabIndex = 48
+        Me.lblRptData1.Text = "RptData1"
+        '
+        'rtxRptData1
+        '
+        Me.rtxRptData1.Location = New System.Drawing.Point(6, 16)
+        Me.rtxRptData1.Name = "rtxRptData1"
+        Me.rtxRptData1.Size = New System.Drawing.Size(563, 111)
+        Me.rtxRptData1.TabIndex = 23
+        Me.rtxRptData1.Text = ""
+        '
         'tabDNTT
         '
         Me.tabDNTT.Controls.Add(Me.lbkViewAccount)
@@ -2837,6 +2928,16 @@ Partial Class Costing
         Me.lbkQuotation.TabStop = True
         Me.lbkQuotation.Text = "Quotation2"
         '
+        'lbkSaveRptData
+        '
+        Me.lbkSaveRptData.AutoSize = True
+        Me.lbkSaveRptData.Location = New System.Drawing.Point(489, 408)
+        Me.lbkSaveRptData.Name = "lbkSaveRptData"
+        Me.lbkSaveRptData.Size = New System.Drawing.Size(72, 13)
+        Me.lbkSaveRptData.TabIndex = 53
+        Me.lbkSaveRptData.TabStop = True
+        Me.lbkSaveRptData.Text = "SaveRptData"
+        '
         'Costing
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2906,6 +3007,8 @@ Partial Class Costing
         Me.tabStoreFiles.ResumeLayout(False)
         Me.tabStoreFiles.PerformLayout()
         CType(Me.dgrStoredFile, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.tabRptData.ResumeLayout(False)
+        Me.tabRptData.PerformLayout()
         Me.tabDNTT.ResumeLayout(False)
         Me.tabDNTT.PerformLayout()
         CType(Me.dgrSumPaymentDue, System.ComponentModel.ISupportInitialize).EndInit()
@@ -3155,4 +3258,13 @@ Partial Class Costing
     Friend WithEvents lbkQuotation As LinkLabel
     Friend WithEvents Label47 As Label
     Friend WithEvents txtDomInt As TextBox
+    Friend WithEvents chkManualSF As CheckBox
+    Friend WithEvents tabRptData As TabPage
+    Friend WithEvents rtxRptData1 As RichTextBox
+    Friend WithEvents lblRptData3 As Label
+    Friend WithEvents rtxRptData3 As RichTextBox
+    Friend WithEvents lblRptData2 As Label
+    Friend WithEvents rtxRptData2 As RichTextBox
+    Friend WithEvents lblRptData1 As Label
+    Friend WithEvents lbkSaveRptData As LinkLabel
 End Class

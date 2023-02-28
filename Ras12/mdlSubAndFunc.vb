@@ -2794,6 +2794,7 @@ NoImportBill:
         Dim decBillAmt As Decimal
 
         Dim strQuerry As String = "select r.AL, r.CustId, r.RcpNo,R.Srv" _
+                & " ,(case (select count (*) from tkt t where t.Status<>'XX' and t.RCPID=r.RecID and T.DocType in ('GRP','MCO')) when 0 then 'FIT' else 'GRP' end) AS GRP" _
                 & ",r.Roe*r.TtlDue as InvAmt, 0 as SvcFee,r.Currency as RcpCur ,r.TtlDue" _
                 & ",substring(r.RcpNo,1,6)+ substring(r.RcpNo,9,4) as RefNumber" _
                 & ",CONVERT(VARCHAR,r.FstUpdate,23) as TrxDate" _
@@ -2822,53 +2823,64 @@ NoImportBill:
         objRow("tkno") = Mid(objRow("tkno"), 1, Len(objRow("Tkno")) - 1)
         strMemo = objRow("tkno")
         strCur = "VND"
-        decInvAmt = objRow("InvAmt")
+        Select Case objRow("GRP")
+            Case "GRP"
+                'Bo khong import tu dong
+                Return True
 
-        Select Case objRow("AL")
-            Case "BA"
-                strVendorAopId = "800003C5-1581301723"
-                strBu = "PAX:BA"
-                strMemo = strMemo & " USD" & objRow("TtlDue")
-            Case "NH"
-                strVendorAopId = "800011DE-1602163328"
-                strBu = "NH"
-            Case "GA"
-                strVendorAopId = "80001585-1617852223"
-                strBu = "PAX:GA"
-            Case "PG"
-                strVendorAopId = "800007C3-1591599380"
-                strBu = "PAX:PG"
-            Case "UA"
-                strVendorAopId = "800011E5-1602210655"
-                strBu = "PAX:UA"
-            Case "UL"
-                strVendorAopId = "80001741-1641952099"
-                strBu = "PAX:UL"
-            Case Else
-                Return False
+            Case "FIT"
+                decInvAmt = objRow("InvAmt")
+
+                Select Case objRow("AL")
+                    Case "4V"
+                        strVendorAopId = "800020BA-1671783737"
+                        strBu = "HQ:4V"
+                        strMemo = strMemo & " USD" & objRow("TtlDue")
+
+                    Case "BA"
+                        strVendorAopId = "800003C5-1581301723"
+                        strBu = "PAX:BA"
+                        strMemo = strMemo & " USD" & objRow("TtlDue")
+                    Case "NH"
+                        strVendorAopId = "800011DE-1602163328"
+                        strBu = "NH"
+                    Case "GA"
+                        strVendorAopId = "80001585-1617852223"
+                        strBu = "PAX:GA"
+                    Case "PG"
+                        strVendorAopId = "800007C3-1591599380"
+                        strBu = "PAX:PG"
+                    Case "UA"
+                        strVendorAopId = "800011E5-1602210655"
+                        strBu = "PAX:UA"
+                    Case "UL"
+                        strVendorAopId = "80001741-1641952099"
+                        strBu = "PAX:UL"
+                    Case Else
+                        Return False
+                End Select
+
+                'import Invoice
+                If objRow("SRV") = "S" Then
+                    intResult = CreateAopQueueInvoice(myStaff.City, 0, "I", "Air", strBu, objRcp("RcpNo"), decInvAmt, 0, objRow("AOPListid") _
+                                                                  , objRow("TrxDate"), objRow("RefNumber"), strMemo, strCur)
+                    If intResult = 0 Then
+                        Return False
+                    Else
+                        lstQueueRecIds.Add(intResult.ToString)
+                    End If
+
+                Else    'refund
+                    intResult = CreateAopQueueCreditMemo(objRow("AOPListid"), strBu, "CUSTOMER RECEIVABLE (" & strCur & ")", objRow("TrxDate") _
+                                                        , objRow("RefNumber"), objRow("Tkno"), objRow("InvAmt"), 0, strMemo _
+                                                        , objRcp("RcpNo"), "Air", "REVENUE")
+                    If intResult = 0 Then
+                        Return False
+                    Else
+                        lstQueueRecIds.Add(intResult.ToString)
+                    End If
+                End If
         End Select
-
-        'import Invoice
-        If objRow("SRV") = "S" Then
-            intResult = CreateAopQueueInvoice(myStaff.City, 0, "I", "Air", strBu, objRcp("RcpNo"), decInvAmt, 0, objRow("AOPListid") _
-                                                          , objRow("TrxDate"), objRow("RefNumber"), strMemo, strCur)
-            If intResult = 0 Then
-                Return False
-            Else
-                lstQueueRecIds.Add(intResult.ToString)
-            End If
-
-        Else    'refund
-            intResult = CreateAopQueueCreditMemo(objRow("AOPListid"), strBu, "CUSTOMER RECEIVABLE (" & strCur & ")", objRow("TrxDate") _
-                                                , objRow("RefNumber"), objRow("Tkno"), objRow("InvAmt"), 0, strMemo _
-                                                , objRcp("RcpNo"), "Air", "REVENUE")
-            If intResult = 0 Then
-                Return False
-            Else
-                lstQueueRecIds.Add(intResult.ToString)
-            End If
-        End If
-
 
         'IMPORT BILL
         If blnNoImportBill Then GoTo NoImportBill
@@ -2902,6 +2914,13 @@ NoImportBill:
         strMemo = objRow("Tkno")
 
         Select Case objRow("AL")
+            Case "4V"
+                strVendorAopId = "800020BA-1671783737"
+                strBu = "HQ:4V"
+                strBillCur = "USD"
+                decBillAmt = objRow("TtlDue")
+                strMemo = strMemo & " USD" & decBillAmt
+
             Case "BA"
                 strVendorAopId = "800003C5-1581301723"
                 strBu = "PAX:BA"
@@ -2927,7 +2946,6 @@ NoImportBill:
                 strBillCur = "USD"
                 decBillAmt = objRow("TtlDue")
                 strMemo = strMemo & " USD" & decBillAmt
-
 
             Case "UA"
                 strVendorAopId = "800011E5-1602210655"
@@ -3217,6 +3235,7 @@ NoImportBill:
         Select Case objRow("GRP")
             Case "GRP"
                 'Bo khong import tu dong
+                Return True
 
             Case "FIT"
                 Select Case objRow("CustShortName")
@@ -3831,7 +3850,7 @@ NoImportBill:
                 End Select
                 strTrxDate = Format(objRow("TrxDate"), "yyyy-MM-dd")
                 intResult = CreateAopQueueBillPaymentCheck(objRow("PayeeAopId"), objRow("BankAccountAopId"), strBU, strAppliedTxnCode, strRefNumber _
-                        , objRow("VND"), strTrxDate, "NonAir", strRefNumber, objRow("Cur"), objRow("UncId"), strMemo)
+                        , objRow("VND"), strTrxDate, "NonAir", strRefNumber, objRow("Cur"), objRow("UncId"), strMemo, myStaff.City)
 
                 lstQueueIDs.Add(intResult)
             Next
@@ -3854,15 +3873,25 @@ NoImportBill:
         Return True
 
     End Function
-    Public Function CreateAopQueueBillPaymentCheck(strPayeeAopId As String, strBankAccountAopId As String, strBu As String _
-                                    , strAppliedTxnId As String, strRefNumber As String, decAmt As Decimal, strTrxDate As String _
+    Public Function CreateAopQueueBillPaymentCheck(strPayeeAopId As String _
+                                    , strBankAccountAopId As String, strBu As String _
+                                    , strAppliedTxnId As String, strRefNumber As String _
+                                    , decAmt As Decimal, strTrxDate As String _
                                     , strProd As String, strTrxCode As String, strCur As String _
-                                    , intUncId As Integer, strMemo As String) As Integer
+                                    , intUncId As Integer, strMemo As String _
+                                    , strCity As String) As Integer
 
         Dim strQuerry As String
         Dim intQueueRecId As Integer
         'Dim intNewRecId As Integer
+        Dim strApName As String = ""
 
+        Select Case strCity
+            Case "SGN"
+                strApName = "VENDOR PAYABLE (" & strCur & ")"
+            Case "HAN"
+                strApName = "PHAI TRA NGUOI BAN"
+        End Select
         If Not strTrxDate.Contains("{d") Then
             strTrxDate = "{d'" & Format(CDate(strTrxDate), "yyyy-MM-dd") & "'}"
         End If
@@ -3873,8 +3902,7 @@ NoImportBill:
         strQuerry = "INSERT INTO BillPaymentCheckLine (PayeeEntityRefListID, BankAccountRefListID, AppliedToTxnTxnID" _
                 & ",RefNumber, TxnDate,memo,APAccountRefFullName,AppliedToTxnPaymentAmount, FQSaveToCache) Values ('" & strPayeeAopId _
                 & "','" & strBankAccountAopId & "','" & strAppliedTxnId & "','" & strRefNumber & "'," & strTrxDate _
-                & ",'" & strMemo & "','VENDOR PAYABLE (" & strCur & ")'," & decAmt & ",0)"
-
+                & ",'" & strMemo & "','" & strApName & "'," & decAmt & ",0)"
 
         intQueueRecId = CreateAopQueueRecord(intQueueRecId, "P", strProd, strBu, strTrxCode, strQuerry, True, "ODBC",, strRefNumber, decAmt)
 
@@ -4383,6 +4411,9 @@ NoImportBill:
         Dim strRefNumber As String = ""
         Select Case strApp
             Case "RAS"
+                If myStaff.City = "HAN" Then
+                    Return True '24Feb23: chưa làm import cho UNC tạo từ RASHAN
+                End If
                 If strCounter = "N-A" Then
                     strQuerry = " select t.Tcode,u.RefNo,v2.Cur,u.RequestedAmt as Amount,p.VND" _
                     & " ,v.Shortname as Vendor,v.RecId as VendorId,v.AopTravelListId as VendorAopId" _
@@ -4401,6 +4432,21 @@ NoImportBill:
                 End If
 
             Case "OPS"
+                '^_^20230228 mark by 7643 -b-
+                'strQuerry = "select p.Tourcode as Tcode,u.RefNo,v2.Cur,u.RequestedAmt as Amount,p.Amount as VND" _
+                '    & ",v.Shortname as Vendor,v.RecId as VendorId,v.AopTravelListId as VendorAopId" _
+                '    & ",c.CustShortName,c.AOPTravelListID as CustAopId,v.Cat,v.Cur as PayeeCur" _
+                '    & ",Sdate as TrxDate,TspClass" _
+                '    & " from UNC_Payments u" _
+                '    & " left join Vendor v on u.PayeeAccountId=v.RecID" _
+                '    & " Left join Vendor v2 on u.PayerAccountId=v2.RecID" _
+                '    & " Left join (select DNTTid,TourCode, sum(amount) as amount from TourPmt where DNTTID=" & intPaymentId _
+                '    & " group by DNTTID,TourCode) p ON u.RecID=p.DNTTID" _
+                '    & " left join TourInfo i ON i.TourCode=p.TourCode" _
+                '    & " left join Customer c On i.TspCust=c.CustShortName And c.Status='ok'" _
+                '    & " where u.RecId=" & intPaymentId & " And u.Status='OK'"
+                '^_^20230228 mark by 7643 -e-
+                '^_^20230228 modi by 7643 -b-
                 strQuerry = "select p.Tourcode as Tcode,u.RefNo,v2.Cur,u.RequestedAmt as Amount,p.Amount as VND" _
                     & ",v.Shortname as Vendor,v.RecId as VendorId,v.AopTravelListId as VendorAopId" _
                     & ",c.CustShortName,c.AOPTravelListID as CustAopId,v.Cat,v.Cur as PayeeCur" _
@@ -4408,11 +4454,12 @@ NoImportBill:
                     & " from UNC_Payments u" _
                     & " left join Vendor v on u.PayeeAccountId=v.RecID" _
                     & " Left join Vendor v2 on u.PayerAccountId=v2.RecID" _
-                    & " Left join (select DNTTid,TourCode, sum(amount) as amount from TourPmt where DNTTID=" & intPaymentId _
+                    & " Left join (select DNTTid,TourCode, sum(amount) as amount from TourPmt where City='" & myStaff.City & "' and DNTTID=" & intPaymentId _
                     & " group by DNTTID,TourCode) p ON u.RecID=p.DNTTID" _
                     & " left join TourInfo i ON i.TourCode=p.TourCode" _
                     & " left join Customer c On i.TspCust=c.CustShortName And c.Status='ok'" _
                     & " where u.RecId=" & intPaymentId & " And u.Status='OK'"
+                '^_^20230228 modi by 7643 -e-
         End Select
         tblUnc = GetDataTable(strQuerry)
 

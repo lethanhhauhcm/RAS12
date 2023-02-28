@@ -11,7 +11,7 @@ Public Class objCustomer
     Private _List_LC As String, _VAT_Company As String
     Private mblnLinkNonAirServiceWzFee As Boolean
     Private mstrTvc As String
-
+    Private mblnGetReturnDate As Boolean
     ReadOnly Property LinkNonAirServiceWzFee() As Boolean
         Get
             Return LinkNonAirServiceWzFee
@@ -352,6 +352,14 @@ Public Class objCustomer
         Get
             Return mstrTvc
         End Get
+    End Property
+    Public Property GetReturnDate As Boolean
+        Get
+            Return mblnGetReturnDate
+        End Get
+        Set(value As Boolean)
+            mblnGetReturnDate = value
+        End Set
     End Property
     Public Function AddCustomer(ByVal pCustShortName As String, ByVal pCustFullName As String _
                                 , ByVal pCustTaxcode As String, ByVal pCustAddress As String _

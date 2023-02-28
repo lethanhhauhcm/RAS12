@@ -40,6 +40,7 @@ Partial Class frmMain
         Me.barPrintTrxMultiRcp = New System.Windows.Forms.ToolStripMenuItem()
         Me.BarReprintTRX = New System.Windows.Forms.ToolStripMenuItem()
         Me.BarFODataCorrection = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BarEditRptData = New System.Windows.Forms.ToolStripMenuItem()
         Me.barFOEditRcpInternal = New System.Windows.Forms.ToolStripMenuItem()
         Me.BarFOEditFOP = New System.Windows.Forms.ToolStripMenuItem()
         Me.barEditComm = New System.Windows.Forms.ToolStripMenuItem()
@@ -307,6 +308,7 @@ Partial Class frmMain
         Me.statusConnSate = New System.Windows.Forms.ToolStripStatusLabel()
         Me.statusUser = New System.Windows.Forms.ToolStripStatusLabel()
         Me.StatusVersion = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.barRptData = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStrip1.SuspendLayout()
         Me.PnlReport.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
@@ -404,7 +406,7 @@ Partial Class frmMain
         '
         'PadFO
         '
-        Me.PadFO.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BarFOIssue, Me.BarFOEditMoney, Me.BarFOPrintDeleteRCP, Me.barPrintTrxMultiRcp, Me.BarReprintTRX, Me.BarFODataCorrection, Me.barFOEditRcpInternal, Me.BarFOEditFOP, Me.barEditComm, Me.barACR, Me.barAlCredit, Me.BarCounterCheck, Me.ToolStripSeparator6, Me.BarApproveITP4Counter, Me.BarInv_FO, Me.barRcpEdit4VatInvIssuedFO, Me.BarRQ4DepHandlingCounter, Me.ToolStripSeparator4, Me.BarFOReport, Me.BarView, Me.BarLockTheUnlocked, Me.BarUTTR, Me.ToolStripSeparator5, Me.BarCreditExtensionCounter, Me.BarClearPendingPayment, Me.BarCcUpdate, Me.barFocManager, Me.BarFoxSettingSMS, Me.BarFOUserManager, Me.BarPendingXX, Me.ToolStripSeparator11, Me.BarChangePSWAndStopSales, Me.BarUpdateForExQuay, Me.BarGroupBooking, Me.BarALINVFollowUp, Me.ToolStripSeparator18, Me.BarExportToTSP, Me.barUpdateTable})
+        Me.PadFO.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.BarFOIssue, Me.BarFOEditMoney, Me.BarFOPrintDeleteRCP, Me.barPrintTrxMultiRcp, Me.BarReprintTRX, Me.BarFODataCorrection, Me.BarEditRptData, Me.barFOEditRcpInternal, Me.BarFOEditFOP, Me.barEditComm, Me.barACR, Me.barAlCredit, Me.BarCounterCheck, Me.ToolStripSeparator6, Me.BarApproveITP4Counter, Me.BarInv_FO, Me.barRcpEdit4VatInvIssuedFO, Me.BarRQ4DepHandlingCounter, Me.ToolStripSeparator4, Me.BarFOReport, Me.BarView, Me.BarLockTheUnlocked, Me.BarUTTR, Me.ToolStripSeparator5, Me.BarCreditExtensionCounter, Me.BarClearPendingPayment, Me.BarCcUpdate, Me.barFocManager, Me.BarFoxSettingSMS, Me.BarFOUserManager, Me.BarPendingXX, Me.ToolStripSeparator11, Me.BarChangePSWAndStopSales, Me.BarUpdateForExQuay, Me.BarGroupBooking, Me.BarALINVFollowUp, Me.ToolStripSeparator18, Me.BarExportToTSP, Me.barUpdateTable})
         Me.PadFO.Name = "PadFO"
         Me.PadFO.Size = New System.Drawing.Size(62, 20)
         Me.PadFO.Text = "Counter"
@@ -449,6 +451,13 @@ Partial Class frmMain
         Me.BarFODataCorrection.Size = New System.Drawing.Size(221, 22)
         Me.BarFODataCorrection.Tag = "NON"
         Me.BarFODataCorrection.Text = "Edit NonMonetary Infor"
+        '
+        'BarEditRptData
+        '
+        Me.BarEditRptData.Name = "BarEditRptData"
+        Me.BarEditRptData.Size = New System.Drawing.Size(221, 22)
+        Me.BarEditRptData.Tag = "EditRptData"
+        Me.BarEditRptData.Text = "EditRptData"
         '
         'barFOEditRcpInternal
         '
@@ -1815,7 +1824,7 @@ Partial Class frmMain
         '
         'padCtsData
         '
-        Me.padCtsData.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.barBookerList, Me.barCdrHierMap, Me.barCTS_MISC, Me.barCtsReports, Me.barExportCtsData, Me.barImport, Me.barRequiredData, Me.barVNCorpTicket, Me.barPushData2Report})
+        Me.padCtsData.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.barBookerList, Me.barCdrHierMap, Me.barCTS_MISC, Me.barCtsReports, Me.barExportCtsData, Me.barImport, Me.barRequiredData, Me.barRptData, Me.barVNCorpTicket, Me.barPushData2Report})
         Me.padCtsData.Name = "padCtsData"
         Me.padCtsData.Size = New System.Drawing.Size(60, 20)
         Me.padCtsData.Text = "CtsData"
@@ -1855,43 +1864,43 @@ Partial Class frmMain
         '
         Me.barFriesland.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.barNoMXP, Me.barExport2MXP})
         Me.barFriesland.Name = "barFriesland"
-        Me.barFriesland.Size = New System.Drawing.Size(180, 22)
+        Me.barFriesland.Size = New System.Drawing.Size(141, 22)
         Me.barFriesland.Text = "Friesland"
         '
         'barNoMXP
         '
         Me.barNoMXP.Name = "barNoMXP"
-        Me.barNoMXP.Size = New System.Drawing.Size(180, 22)
+        Me.barNoMXP.Size = New System.Drawing.Size(139, 22)
         Me.barNoMXP.Text = "NoMXP"
         '
         'barExport2MXP
         '
         Me.barExport2MXP.Name = "barExport2MXP"
-        Me.barExport2MXP.Size = New System.Drawing.Size(180, 22)
+        Me.barExport2MXP.Size = New System.Drawing.Size(139, 22)
         Me.barExport2MXP.Text = "Export2MXP"
         '
         'barExportGO
         '
         Me.barExportGO.Name = "barExportGO"
-        Me.barExportGO.Size = New System.Drawing.Size(180, 22)
+        Me.barExportGO.Size = New System.Drawing.Size(141, 22)
         Me.barExportGO.Text = "GO"
         '
         'barExportHuntsman
         '
         Me.barExportHuntsman.Name = "barExportHuntsman"
-        Me.barExportHuntsman.Size = New System.Drawing.Size(180, 22)
+        Me.barExportHuntsman.Size = New System.Drawing.Size(141, 22)
         Me.barExportHuntsman.Text = "Huntsman"
         '
         'barExportReedMackay
         '
         Me.barExportReedMackay.Name = "barExportReedMackay"
-        Me.barExportReedMackay.Size = New System.Drawing.Size(180, 22)
+        Me.barExportReedMackay.Size = New System.Drawing.Size(141, 22)
         Me.barExportReedMackay.Text = "ReedMackay"
         '
         'barUpdateCDRs
         '
         Me.barUpdateCDRs.Name = "barUpdateCDRs"
-        Me.barUpdateCDRs.Size = New System.Drawing.Size(180, 22)
+        Me.barUpdateCDRs.Size = New System.Drawing.Size(141, 22)
         Me.barUpdateCDRs.Text = "UpdateCDRs"
         '
         'barImport
@@ -2226,6 +2235,12 @@ Partial Class frmMain
         Me.StatusVersion.Size = New System.Drawing.Size(119, 17)
         Me.StatusVersion.Text = "ToolStripStatusLabel1"
         '
+        'barRptData
+        '
+        Me.barRptData.Name = "barRptData"
+        Me.barRptData.Size = New System.Drawing.Size(180, 22)
+        Me.barRptData.Text = "RptData"
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2543,4 +2558,6 @@ Partial Class frmMain
     Friend WithEvents barHotelRates As ToolStripMenuItem
     Friend WithEvents barNoMXP As ToolStripMenuItem
     Friend WithEvents barExport2MXP As ToolStripMenuItem
+    Friend WithEvents BarEditRptData As ToolStripMenuItem
+    Friend WithEvents barRptData As ToolStripMenuItem
 End Class

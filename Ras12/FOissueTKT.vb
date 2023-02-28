@@ -141,7 +141,12 @@ Public Class FOissueTKT
                     End If
                 End If
 
-
+                rtxRptData1.Text = tblRcp.Rows(0)("RptData1")
+                rtxRptData2.Text = tblRcp.Rows(0)("RptData2")
+                rtxRptData3.Text = tblRcp.Rows(0)("RptData3")
+                If parAction.StartsWith("EditRptData") Then
+                    tabRptData.Show()
+                End If
             End If
         End If
 
@@ -156,7 +161,6 @@ Public Class FOissueTKT
         LoadCmb_VAL(Me.cboVendor, "select RecID as VAL, ShortName as DIS from Vendor" _
             & " where status ='OK' and CAT='AR' order by ShortName")
         cboVendor.SelectedIndex = -1
-
 
     End Sub
 
@@ -220,6 +224,7 @@ Public Class FOissueTKT
             Me.GrpComm.Enabled = False
             Me.GrpFare.Enabled = False
         End If
+        VisibleReturnDate()
     End Sub
     Private Sub txtALCommVAL_Enter(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtALCommVAL.Enter
         Me.txtALCommVAL.Text = Format(CDec(Me.txtFare.Text) - CDec(Me.txtNetToAL.Text), "#,##0.00")
@@ -931,7 +936,7 @@ Public Class FOissueTKT
         If mRCP <> "" And WhatAction <> "PRN" Then
             AR_RPTNO = ScalarToString("RCP", "RPTNO", " recid=" & parRCPID)
             If AR_RPTNO <> "" Then
-                MsgBox("This Transaction Has Been Reported to Accouting. and Locked. Ask Authorized People to Unlock", MsgBoxStyle.Critical, msgTitle)
+                MsgBox("This Transaction Has Been Reported to Accouting and Locked. Ask Counter Manager to Unlock", MsgBoxStyle.Critical, msgTitle)
                 Exit Sub
             Else
                 HasINVID = ScalarToInt("FOP", "ProfID", " Status<>'XX' and RCPID=" & parRCPID)
@@ -969,6 +974,12 @@ Public Class FOissueTKT
         Me.CmbCustType.Text = ("CustType")
         MyAL.ALCode = dTable.Rows(0)("Stock")
         MyCust.CustID = dTable.Rows(0)("CustID")
+        Select Case MyCust.CustType
+            Case "CS", "LC"
+                If ScalarToInt("CompanyInfo", "RecID", "GetReturnDate='True' and CustId=" & MyCust.CustID) Then
+                    MyCust.GetReturnDate = True
+                End If
+        End Select
         If mRCP <> "" Then
             pubVarSRV = dTable.Rows(0)("SRV")
             If pubVarSRV = "O" Then pubVarSRV = "R"
@@ -1548,12 +1559,13 @@ Public Class FOissueTKT
             End If
         End If
         Me.txtFltDate.Text = Me.GridTKT.Item("DOF", R).Value
+        Me.txtItinerary.Text = Me.GridTKT.Item("Routing", R).Value
+        VisibleReturnDate()
+
         If dtpReturnDate.Visible _
             AndAlso Not IsDBNull(GridTKT.Item("ReturnDate", R).Value) Then
             dtpReturnDate.Value = Me.GridTKT.Item("ReturnDate", R).Value
         End If
-
-        Me.txtItinerary.Text = Me.GridTKT.Item("Routing", R).Value
         Me.TxtBkgClass.Text = Me.GridTKT.Item("BkgClass", R).Value
         Me.txtFB.Text = Me.GridTKT.Item("FareBasis", R).Value
         Me.CmbDocType.Text = Me.GridTKT.Item("DocType", R).Value
@@ -2705,6 +2717,16 @@ ExitHere:
         Dim strDK As String, CMC As String
         Try
             MyCust.CustID = Me.CmbChannel.SelectedValue
+            If myStaff.City = "SGN" Then
+                Select Case MyCust.CustType
+                    Case "CS", "LC"
+                        If ScalarToInt("CompanyInfo", "RecID", "GetReturnDate='True' and CustId=" & MyCust.CustID) Then
+                            MyCust.GetReturnDate = True
+                        End If
+                        ShowAllRptData(MyCust.CustID, Me, ApplyTo.AIR)
+                End Select
+            End If
+
             txtCustName.Text = MyCust.FullName
             Me.txtCustAddrr.Text = MyCust.Addr
             Me.txtTaxCode.Text = MyCust.taxCode
@@ -2907,6 +2929,11 @@ errHandler:
 
         If Not CheckDOI() Then Exit Sub
 
+        If myStaff.Counter = "CWT" AndAlso ChkBizTrip.Checked _
+            AndAlso Not CheckAllRptData(MyCust.CustID, Me) Then
+            Me.TabControl1.SelectedTab = tabRptData
+            Exit Sub
+        End If
         If pubVarSRV = "C" Then
             For Each objRow As DataGridViewRow In GridTKT.Rows
                 Dim dteFstDateOfTkt As Date = ScalarToDate("TKT", "FstUpdate" _
@@ -3298,6 +3325,9 @@ errHandler:
 
 
     End Function
+
+
+
     Private Function SaveInput(ByVal varStatus As String) As Boolean
         Dim ROEID As Integer, strSQL As String = "", tmpRMK As String
         Dim LclVarSRV As String = pubVarSRV, TKTList As String, tmpDocNo As String = "", RMK As String = ""
@@ -3446,7 +3476,8 @@ errHandler:
                         Me.GridFOP.Item("RCPCurrency", i).Value, Me.GridFOP.Item("RCPROE", i).Value,
                         CDec(Me.GridFOP.Item("Amount", i).Value), tmpDocNo.ToUpper, RMK, MyCust.CustID, 0)
                     cmd.ExecuteNonQuery()
-                    If Me.GridFOP.Item("FOP_FOP", i).Value = "RND" And Me.GridFOP.Item("Amount", i).Value * Me.GridFOP.Item("RCPROE", i).Value > 10000 Then
+                    If Me.GridFOP.Item("FOP_FOP", i).Value = "RND" AndAlso Me.GridFOP.Item("Amount", i).Value * Me.GridFOP.Item("RCPROE", i).Value > 10000 _
+                        AndAlso Not (CmbAL.Text = "4V" And myStaff.Counter = "GSA") Then
                         t.Rollback()
                         FeedBack("Số tiền làm tròn quá mức cho phép!")
                         Return False
@@ -3788,7 +3819,8 @@ errHandler:
                         Me.GridFOP.Item("RCPCurrency", r).Value, Me.GridFOP.Item("RCPROE", r).Value,
                         CDec(Me.GridFOP.Item("Amount", r).Value), DocNo.ToUpper, RMK.ToUpper, tmpCustID, 0)
                 End If
-                If Me.GridFOP.Item("FOP_FOP", r).Value = "RND" And Me.GridFOP.Item("Amount", r).Value * Me.GridFOP.Item("RCPROE", r).Value > 16000 Then
+                If Me.GridFOP.Item("FOP_FOP", r).Value = "RND" AndAlso Me.GridFOP.Item("Amount", r).Value * Me.GridFOP.Item("RCPROE", r).Value > 16000 _
+                    AndAlso Not (myStaff.Counter = "GSA" AndAlso CmbAL.Text = "4V") Then
                     FeedBack("Err. Illogic RND FOP and Amount")
                     Exit Sub
                 End If
@@ -4481,8 +4513,8 @@ KoTimThay:
                     Me.GridTKT.Item("DocType", RowNo).Value = Me.GridAutoTKT.Item("DocType", r).Value
                     Me.GridTKT.Item("CustType", RowNo).Value = Me.CmbCustType.Text
                     Me.GridTKT.Item("DOF", RowNo).Value = Me.GridAutoTKT.Item("DOF", r).Value
-                    Me.GridTKT.Item("ReturnDate", RowNo).Value = Me.GridAutoTKT.Item("ReturnDate", r).Value
                     Me.GridTKT.Item("Routing", RowNo).Value = tmpRTG
+                    Me.GridTKT.Item("ReturnDate", RowNo).Value = Me.GridAutoTKT.Item("ReturnDate", r).Value
                     Me.GridTKT.Item("RLOC", RowNo).Value = Me.GridAutoTKT.Item("RLOC", r).Value
                     Me.GridTKT.Item("ReportGrp", RowNo).Value = Me.GridAutoTKT.Item("ReportGrp", r).Value
 
@@ -4936,6 +4968,8 @@ KoTimThay:
         Dim intLcc As Integer
         Dim decKickBackAmt As Decimal
         Dim decMiscFeeAmt As Decimal
+        Dim strReturnDate As String
+
         SL = 1
         LclSRV = varSRV
         strSQL = ""
@@ -4992,12 +5026,18 @@ KoTimThay:
                 decMiscFeeAmt = Me.GridTKT.Item("MiscFeeAmt", r).Value
             End If
 
+            If IsDBNull(GridTKT.Item("ReturnDate", r).Value) Then
+                strReturnDate = "NULL"
+            Else
+                strReturnDate = "'" & CreateFromDate(GridTKT.Item("ReturnDate", r).Value) & "'"
+            End If
+
             strSQL = strSQL & "; insert into TKT "
             strSQL = strSQL & "(RCPID, RCPNO, TKNO, FTKT, SRV, DOI, DOF, Itinerary, BkgClass, Currency,"
             strSQL = strSQL & "FareBasis, DocType, PaxType, TourCode, PromoCode, FareType, Fare, ShownFare, KickbackAmt, MiscFeeAmt,"
             strSQL = strSQL & "Tax, Charge, ChargeTV, CommPCT, CommVAL, NettoAL, Qty, AgtDisctPCT, CommOffer,"
             strSQL = strSQL & "Tax_D, Charge_D, AgtDisctVAL, FstUser, PaxName, AL, StatusAL, StockCtrl, RMK" _
-                            & ", [Dependent],RLOC,Booker,LCC,DomInt,Tax2AL,VatAmt2AL,TktIssuedBy) "
+                            & ", [Dependent],RLOC,Booker,LCC,DomInt,Tax2AL,VatAmt2AL,TktIssuedBy,ReturnDate) "
             strSQL = strSQL & " values ('"
             strSQL = strSQL & varRCPID
             strSQL = strSQL & "','" & Me.TxtTRXNO.Text
@@ -5046,7 +5086,8 @@ KoTimThay:
                         & intLcc & ",'" & cboDomInt.Text _
                         & "'," & CDec(GridTKT.Item("Tax2AL", r).Value) & "," _
                         & CDec(GridTKT.Item("VatAmt2AL", r).Value) _
-                        & "," & GridTKT.Item("TktIssuedBy", r).Value & ")"
+                        & "," & GridTKT.Item("TktIssuedBy", r).Value _
+                        & "," & strReturnDate & ")"
         Next
         If varSRV = "C" Then ' C= Voi khach thi Refund nhung bao cao hang la Void
             For r As Int16 = 0 To Me.GridTKT.Rows.Count - 1
@@ -5294,7 +5335,7 @@ KoTimThay:
                     Return False
                 End If
                 If dtpReturnDate.Visible AndAlso myStaff.Counter = "CWT" _
-                    AndAlso dtpReturnDate.Value < txtFltDate.Value Then
+                    AndAlso dtpReturnDate.Value.Date < txtFltDate.Value.Date Then
                     MsgBox("ReturnDate phải bằng hoặc sau FlightDate")
                     Return False
                 End If
@@ -6023,6 +6064,7 @@ InvalidTCP:
             Case Else
                 If CmbDocType.Text = "ETK" Then
                     cboDomInt.SelectedIndex = cboDomInt.FindStringExact(DefineDomIntRtg(pstrVnDomCities, txtItinerary.Text))
+                    txtItinerary.Text = txtItinerary.Text.Trim
                 End If
 
         End Select
@@ -6053,16 +6095,32 @@ InvalidTCP:
     Private Function VisibleReturnDate() As Boolean
         Dim blnVisible As Boolean
 
-        If CmbDocType.Text = "ETK" AndAlso myStaff.Counter = "CWT" _
-            AndAlso ScalarToInt("CompanyInfo", "TOP 1 RecId" _
-                                , "GetReturnDate='true' and CustId=" & MyCust.CustID _
-                                & " and Status='OK'") > 0 Then
+        If MyCust.GetReturnDate AndAlso CmbDocType.Text = "ETK" AndAlso myStaff.Counter = "CWT" _
+            AndAlso txtItinerary.TextLength > 9 Then
             blnVisible = True
         End If
         dtpReturnDate.Visible = blnVisible
         lblReturnDate.Visible = blnVisible
         Return True
     End Function
+
+    Private Sub lbkSaveRptData_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles lbkSaveRptData.LinkClicked
+        If Not CheckAllRptData(MyCust.CustID,me) Then Exit Sub
+        Dim cmd As SqlClient.SqlCommand = Conn.CreateCommand()
+        cmd.CommandText = "update Rcp (RptData1,RptData2,RptData3)" _
+                       & " values (@RptData1, @RptData2, @RptData3)" _
+                       & " where RecId=" & pubVarRCPID_BeingEdited
+        cmd.Parameters.Clear()
+        cmd.Parameters.Add("@RptData1", SqlDbType.NVarChar).Value = rtxRptData1.Text.TrimEnd
+        cmd.Parameters.Add("@RptData2", SqlDbType.NVarChar).Value = rtxRptData2.Text.TrimEnd
+        cmd.Parameters.Add("@RptData3", SqlDbType.NVarChar).Value = rtxRptData3.Text.TrimEnd
+
+        If cmd.ExecuteNonQuery = 0 Then
+            MsgBox("Unable to update RptData for Rcp " _
+                   & ScalarToString("RCP", "RcpNo", "RecId=" & pubVarRCPID_BeingEdited))
+        End If
+
+    End Sub
 
     Private Sub dtpReturnDate_GotFocus(sender As Object, e As EventArgs) Handles dtpReturnDate.GotFocus
         If Not dtpReturnDate.Visible Then
@@ -6089,5 +6147,8 @@ InvalidTCP:
         Next
     End Sub
 
+    Private Sub txtItinerary_Validated(sender As Object, e As EventArgs) Handles txtItinerary.Validated
 
+
+    End Sub
 End Class

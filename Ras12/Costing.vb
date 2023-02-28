@@ -44,7 +44,7 @@ Public Class Costing
                                 & ", BUAdmin, Location, t.RMK, Dept, RequiredData" _
                                 & ", FileId, WindowId, QuotationFile, WzAir, RcpId" _
                                 & ", c.VAL as Channel, CustShortName, VatPct, ActStatus,RejectReason" _
-                                & ",WebId" _
+                                & ",WebId,ManualSF,RptData1,RptData2,RptData3" _
                                 & " from DuToan_Tour t" _
                                 & " left join [Cust_Detail] c on t.CustId=c.CustId" _
                                 & " where c.Status='OK' and c.Cat='Channel' "
@@ -348,10 +348,10 @@ Public Class Costing
             'custid
             cmd.CommandText = "insert DuToan_Tour (Tcode, SDate, CustShortName, CustID, Email, Contact, Brief, Pax, BillingBy, FstUser, " &
                 "EDate, Traveller, KeyMap, Owner, PRNO, IONo, RefNo" _
-                & ", BUAdmin, Dept, Location, EventDate,WindowId,WzAir,VatPct)" _
+                & ", BUAdmin, Dept, Location, EventDate,WindowId,WzAir,ManualSF,VatPct)" _
                 & " values (@Tcode, @SDate, @CustShortName, " &
                 "@CustID, @Email, @Contact, @Brief, @Pax, @BillingBy, @FstUser,@EDate, @Traveller, @KeyMap, @Owner, @PRNO,@IONo, @RefNo,@BUAdmin," &
-                "@Dept, @Location, @EventDate, @WindowId,@WzAir,@VatPct);SELECT SCOPE_IDENTITY() AS [RecID]"
+                "@Dept, @Location, @EventDate, @WindowId,@WzAir,@ManualSF,@VatPct);SELECT SCOPE_IDENTITY() AS [RecID]"
             cmd.Parameters.Clear()
             cmd.Parameters.Add("@TCode", SqlDbType.VarChar).Value = Me.txtTcode.Text
             cmd.Parameters.Add("@SDate", SqlDbType.DateTime).Value = Me.TxtStartDate.Value.Date
@@ -376,6 +376,7 @@ Public Class Costing
             cmd.Parameters.Add("@EventDate", SqlDbType.DateTime).Value = Me.txtEventDate.Value.Date
             cmd.Parameters.Add("@WindowId", SqlDbType.VarChar).Value = txtWindowId.Text.Trim
             cmd.Parameters.Add("@WzAir", SqlDbType.Bit).Value = chkWzAir.Checked
+            cmd.Parameters.Add("@ManualSF", SqlDbType.Bit).Value = chkManualSF.Checked
             cmd.Parameters.Add("@VatPct", SqlDbType.Int).Value = txtVatPct.Text
 
             tmpDuToanID = cmd.ExecuteScalar
@@ -953,7 +954,7 @@ Public Class Costing
             End If
         End If
 
-        If txtBooker.Text <> "ZPERSONAL" Then
+        If Not GridTour.CurrentRow.Cells("ManualSf").Value AndAlso txtBooker.Text <> "ZPERSONAL" Then
             'Tinh service fee dang % tu dong
             Dim strAutoServiceType As String = GetAutoSfType(GridTour.CurrentRow.Cells("RecId").Value)
             If strAutoServiceType <> "N/A" Then
@@ -1312,6 +1313,8 @@ ResumeHere:
             MsgBox("This Tour Code Has Been Finalised", MsgBoxStyle.Information, msgTitle)
             Exit Sub
         End If
+
+        If Not CheckAllRptData(GridTour.CurrentRow.Cells("CustId").Value, Me) Then Exit Sub
 
         'Kiem tra co Bill moi cho Finalize (StoreFile)
         If GridTour.CurrentRow.Cells("Contact").Value <> "ZPERSONAL" _
@@ -1690,6 +1693,7 @@ UpdateDbHere:
         Me.TxtTVSfAmount.Text = tmpSF * CDec(Me.TxtTvSfPct.Text) / 100
     End Sub
     Private Function MakeQuotation(blnAutoSF As Boolean) As Boolean
+        If GridTour.CurrentRow.Cells("ManualSF").Value Then blnAutoSF = False
         If updateDL_CDM_Quote(Me.GridTour.CurrentRow.Cells("recID").Value, "QuoteValid", "Quotation Validity") Then
             If UpdateROE_ItemPricing("Q") Then
                 Dim blnSfExist As Boolean
@@ -1920,12 +1924,12 @@ UpdateDbHere:
         '^_^20220729 add by 7643 -e-
         strCmd = String.Format("update Dutoan_Tour set contact='{0}', Traveller='{1}', IONO='{2}', RefNo='{3}',Owner='{4}'," &
             "PRNo='{5}', BUAdmin='{6}', Dept='{7}', Location='{8}', KeyMap='{9}'" _
-            & ", Email='{10}', Brief='{11}' , WindowId='{12}', FileId='{13}', WzAir='{14}', Pax='{15}', VatPct='{16}' ",
+            & ", Email='{10}', Brief='{11}' , WindowId='{12}', FileId='{13}', WzAir='{14}', Pax='{15}', VatPct='{16}', ManualSF='{17}' ",
             txtBooker.Text, Me.cmbTraveler.Text.Replace("--", ""),
             Me.TxtIONo.Text.Replace("--", ""), Me.txtRefCode.Text.Replace("--", ""), Me.TxtOwner.Text.Replace("--", ""),
             Me.TxtPRNo.Text.Replace("--", ""), Me.CmbBUAdmin.Text.Replace("--", ""), Me.CmbDept.Text.Replace("--", ""),
             IIf(Me.OptCWT.Checked, "N/A", Me.cmbLocation.Text.Replace("--", "")), txtCostCenter.Text, Me.TxtEmail.Text.Replace("--", ""),
-            Me.TxtBrief.Text.Replace("--", "").Replace("'", ""), txtWindowId.Text.Trim, txtFileId.Text.Trim, chkWzAir.Checked, TxtPax.Text, txtVatPct.Text)
+            Me.TxtBrief.Text.Replace("--", "").Replace("'", ""), txtWindowId.Text.Trim, txtFileId.Text.Trim, chkWzAir.Checked, TxtPax.Text, txtVatPct.Text, chkManualSF.Checked)
 
         If myStaff.SupOf <> "" Then
             strCmd = String.Format(" {0}, Sdate='{1}', EDate='{2}', EventDate='{3}' ", strCmd, Me.TxtStartDate.Value.Date, Me.txtEndDate.Value.Date, Me.txtEventDate.Value.Date)
@@ -3886,6 +3890,11 @@ UpdateDbHere:
         mdteSelectedSdate = GridTour.CurrentRow.Cells("Sdate").Value
         txtCostCenter.Text = GridTour.CurrentRow.Cells("KeyMap").Value
         txtVatPct.Text = GridTour.CurrentRow.Cells("VatPct").Value
+        chkManualSF.Checked = GridTour.CurrentRow.Cells("ManualSF").Value
+
+        rtxRptData1.Text = GridTour.CurrentRow.Cells("RptData1").Value
+        rtxRptData2.Text = GridTour.CurrentRow.Cells("RptData2").Value
+        rtxRptData3.Text = GridTour.CurrentRow.Cells("RptData3").Value
 
         'If Me.GridTour.CurrentRow.Cells("CustShortname").Value.ToString.Contains("SANOFI") Then
         '    If Me.LstCCenter.Items.Count = 0 Then
@@ -3936,9 +3945,29 @@ UpdateDbHere:
             LoadGridGO(False)
             LoadFileList()
             LoadStoredFile()
+            ShowAllRptData(GridTour.CurrentRow.Cells("CustId").Value, Me, GetApplyTo4RptData)
         End If
     End Sub
+    Private Function GetApplyTo4RptData() As String
+        Dim strApplyTo As String = String.Empty
 
+        For Each objRow As DataGridViewRow In GridSVC.Rows
+            If objRow.Cells("Service").Value = "Accommodations" Then
+                If strApplyTo = String.Empty Then
+                    strApplyTo = ApplyTo.HTL
+                ElseIf strApplyTo <> ApplyTo.HTL Then
+                    Return ApplyTo.NonAir
+                End If
+            ElseIf objRow.Cells("Service").Value = "Transfer" Then
+                If strApplyTo = String.Empty Then
+                    strApplyTo = ApplyTo.CAR
+                ElseIf strApplyTo <> ApplyTo.CAR Then
+                    Return ApplyTo.NonAir
+                End If
+            End If
+        Next
+        Return ApplyTo.NonAir
+    End Function
     Private Sub tabDNTT_Enter(sender As Object, e As EventArgs) Handles tabDNTT.Enter
         If GridTour.CurrentRow Is Nothing Then Exit Sub
         Dim strLoadVendor As String
@@ -4274,9 +4303,6 @@ UpdateDbHere:
         End If
     End Sub
 
-    Private Sub GridTour_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles GridTour.CellContentClick
-
-    End Sub
 
     Private Sub lbkPush2Act_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles lbkPush2Act.LinkClicked
         If GridTour.CurrentRow Is Nothing Then Exit Sub
@@ -4322,6 +4348,25 @@ UpdateDbHere:
 
     Private Sub lbkQuotation_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles lbkQuotation.LinkClicked
         MakeQuotation(True)
+    End Sub
+
+    Private Sub lbkSaveRptData_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles lbkSaveRptData.LinkClicked
+        If Not CheckAllRptData(MyCust.CustID, Me) Then Exit Sub
+        Dim cmd As SqlClient.SqlCommand = Conn.CreateCommand()
+        With GridTour.CurrentRow
+            cmd.CommandText = "update DuToan_Tour (RptData1,RptData2,RptData3)" _
+                           & " values (@RptData1, @RptData2, @RptData3)" _
+                           & " where RecId=" & .Cells("RecId").Value
+            cmd.Parameters.Clear()
+            cmd.Parameters.Add("@RptData1", SqlDbType.NVarChar).Value = rtxRptData1.Text.TrimEnd
+            cmd.Parameters.Add("@RptData2", SqlDbType.NVarChar).Value = rtxRptData2.Text.TrimEnd
+            cmd.Parameters.Add("@RptData3", SqlDbType.NVarChar).Value = rtxRptData3.Text.TrimEnd
+
+            If cmd.ExecuteNonQuery = 0 Then
+                MsgBox("Unable to update RptData for Tcode " & .Cells("Tcode").Value)
+            End If
+        End With
+
     End Sub
 
     Private Function LoadBuAdmin(strCustShortName As String) As Boolean
