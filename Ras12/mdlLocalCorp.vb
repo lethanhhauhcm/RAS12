@@ -298,7 +298,7 @@ Module mdlLocalCorp
         End If
         Return True
     End Function
-    Public Function ShowAllRptData(intCustId As Integer, frmContainer As Form _
+    Public Function ShowAllRptDataFields(intCustId As Integer, frmContainer As Form _
                                    , strApplyTo As String) As Boolean
         Dim tblRptDataNeeeded As DataTable
 

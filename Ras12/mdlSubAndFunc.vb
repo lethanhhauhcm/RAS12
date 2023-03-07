@@ -2156,7 +2156,7 @@ ErrHandler:
             MsgBox("Invalid RCPNO " & strRcpNo)
             Return False
         End If
-        If tblRcp.Rows(0)("FstUpdate") < "01 Jan 22" Then
+        If tblRcp.Rows(0)("FstUpdate") < "01 Jan 23" Then
             Return True
         End If
         blnNoImportBill = IsInVendorGrp("VENDOR NOT IMPORT AOP", tblRcp.Rows(0)("Vendor"))
@@ -3054,6 +3054,11 @@ NoImportBill:
                 AddCodeTour2MemoAop(objRow("RcpNo"), strMemo)
         End Select
 
+        If objRow("Vendor") = "4VF HAN" Then
+            'strBu = "HO:4V"  '^_^20230307 mark by 7643
+            strBu = "HQ:4V"  '^_^20230307 modi by 7643
+        End If
+
         'import Invoice
         Select Case objRow("GRP")
             Case "GRP"
@@ -3128,10 +3133,16 @@ NoImportBill:
                 AddCodeTour2MemoAop(objRow("RcpNo"), strMemo)
         End Select
 
+        If objRow("Vendor") = "4VF HAN" Then
+            'strBu = "HO:4V"  '^_^20230307 mark by 7643
+            strBu = "HQ:4V"  '^_^20230307 modi by 7643
+        End If
+
         If IsDBNull(objRow("BillAmt")) Then
-                GoTo NoImportBill    've XX doi voi Hang
-            End If
-            Dim strBillCur As String = "VND"
+            GoTo NoImportBill    've XX doi voi Hang
+        End If
+
+        Dim strBillCur As String = "VND"
             Dim decBillAmt As Decimal = objRow("BillAmt")
 
         If objRow("SRV") = "R" Then
@@ -3156,6 +3167,10 @@ NoImportBill:
                                                 Or objRow("DocType").ToString.Contains("MCO") Then
                         strDueDate = GetDueDate4AopNonBsp(objRow("DOI"))
                     End If
+
+                Case "BA AL", "VJ TK - HAN (10256)", "4V AL", "4VF HAN"
+                    'strDueDate = Format(objRow("TrxDate"), "yyyy-MM-dd")  '^_^20230307 mark by 7643
+                    strDueDate = Format(Date.ParseExact(objRow("TrxDate"), "yyyy-MM-dd", Nothing), "yyyy-MM-dd")  '^_^20230307 modi by 7643
             End Select
 
             intResult = CreateAopQueueBill("HAN", objRow("VendorAopId"), objRow("CustAOPid"), strBu, objRow("TrxDate") _
@@ -3569,8 +3584,8 @@ NoImportBill:
 
 
         For Each objRow As DataRow In tblInvoice.Rows
-            'Khong import giao dich nam 2021
-            If objRow("TrxDate") < "01 Jan 2002" Then
+            'Khong import giao dich nam 2022
+            If objRow("TrxDate") < "01 Jan 2003" Then
                 Continue For
             End If
 
@@ -3648,7 +3663,7 @@ NoImportBill:
         tblBill = GetDataTable(strQuerry, Conn)
 
         For Each objRow As DataRow In tblBill.Rows
-            If objRow("TrxDate") < "01 Jan 2002" Then
+            If objRow("TrxDate") < "01 Jan 2023" Then
                 Continue For
             End If
             Dim strAccountName As String = String.Empty
@@ -3796,6 +3811,105 @@ NoImportBill:
             Return True
         End If
 
+
+        If strCounter = "N-A" Then
+            strQuerry = " select t.Tcode,u.RefNo,v2.Cur,u.Amount,p.VND" _
+                               & " ,v.Shortname as Payee,v.RecId as PayeeId,v.AopTravelListId as PayeeAopId" _
+                               & ",v2.AopTravelListId as PayerAopId,m.Val as BankAccountAopId" _
+                               & ",u.RecId as UncId, u.LstUpdate as TrxDate" _
+                               & " from UNC_Payments u " _
+                               & " left join (select PmtId,Tcode,DutoanId,VendorID,sum(VND) as VND from DuToan_Pmt where status='ok' and PmtId=" & intPmtId _
+                               & " group by PmtId,DutoanId,TCode,VendorID) p on u.RecId=p.PmtId and p.Tcode='" & strMemo & "'" _
+                               & " left join Dutoan_Tour t on p.DutoanId=t.RecID " _
+                               & " left join Vendor v on u.PayeeAccountId=v.RecID " _
+                               & " left join Vendor v2 on u.PayerAccountId=v2.RecID " _
+                               & " left join Misc m on m.CAT='AopBankAccountId2'" _
+                               & " And m.Val1='RAS' and m.intVal=v2.RecId " _
+                               & " where u.RecId=" & intPmtId & " And u.Status='OK'"
+        Else
+            strQuerry = "select p.Tourcode as Tcode,u.RefNo,v2.Cur,u.Amount,b.AmountDue as VND" _
+                    & ",v.Shortname as Payee,v.RecId as PayeeId,v.AopTravelListId as PayeeAopId" _
+                    & ",v2.AopTravelListId as PayerAopId,m.Val as BankAccountAopId" _
+                    & ",u.LstUpdate as TrxDate,TspClass,u.RecId as UncId, u.LstUpdate as TrxDate" _
+                    & " from UNC_Payments u" _
+                    & " left join Vendor v on u.PayeeAccountId=v.RecID" _
+                    & " Left join Vendor v2 on u.PayerAccountId=v2.RecID" _
+                    & " Left join (select DNTTID,TourCode,sum(Amount) as Amount from TourPmt where Status='OK' and TourCode='" & strMemo _
+                    & "' group by TourCode,DNTTID) p on u.RecID=p.DNTTID" _
+                    & " left join TourInfo i ON i.TourCode=p.TourCode" _
+                    & " left join Misc m on m.CAT='AopBankAccountId2' " _
+                    & " and m.Val1='OPS' and m.intVal=v2.RecId" _
+                    & " left join AopTravel_Bill b on u.RefNo=b.Refnumber " _
+                    & " where u.recId=" & intPmtId & " And u.Status='OK'" _
+                    & " and b.TxnID='" & strAppliedTxnCode & "'"
+        End If
+
+        tblUnc = GetDataTable(strQuerry, Conn)
+
+        If tblUnc.Rows.Count = 0 Then
+            MsgBox("Requested details had been deleted!")
+            Return False
+        Else
+            Dim lstQueueRecIds As New List(Of String)
+            Dim intResult As Integer
+
+            For Each objRow As DataRow In tblUnc.Rows
+                If IsDBNull(objRow("BankAccountAopId")) Then
+                    MsgBox("Unmatched Bank Account Id for " & objRow("RefNo"))
+                    Continue For
+                End If
+                Select Case strCounter
+                    Case "N-A"
+                        If objRow("VND") < 0 Then
+                            Continue For
+                        End If
+                        strBU = "CTS-NONAIR"
+                    Case Else
+                        strBU = objRow("TspClass")
+                End Select
+                strTrxDate = Format(Date.ParseExact(objRow("TrxDate"), "yyyy-MM-dd", Nothing), "yyyy-MM-dd")
+                intResult = CreateAopQueueBillPaymentCheck(objRow("PayeeAopId"), objRow("BankAccountAopId"), strBU, strAppliedTxnCode, strRefNumber _
+                        , objRow("VND"), strTrxDate, "NonAir", strRefNumber, objRow("Cur"), objRow("UncId"), strMemo, myStaff.City)
+
+                lstQueueIDs.Add(intResult)
+            Next
+        End If
+        If lstQueueIDs.Count = 0 Then
+            Return False
+        Else
+            Dim arrQueueIDs(0 To lstQueueIDs.Count - 1) As String
+            lstQueueIDs.CopyTo(arrQueueIDs)
+            Dim lstQuerries As New List(Of String)
+            lstQuerries.Add("Update AopQueue set Status='OK'where LinkId in(" & Join(arrQueueIDs, ",") & ")")
+            lstQuerries.Add("Update AopQueue set TxnId='" & strAppliedTxnCode & "' where RecId=" & intBillQueueId)
+            If UpdateListOfQuerries(lstQuerries, Conn) Then
+                Return True
+            Else
+                Return False
+            End If
+        End If
+
+        Return True
+
+    End Function
+
+    Public Function CreateAopQueueBillPayment2(strTrxCode As String, strRefNumber As String _
+                                , strCounter As String, strAppliedTxnCode As String _
+                                , intBillQueueId As Integer, strMemo As String) As Boolean
+        Dim strQuerry As String
+        Dim tblUnc As DataTable
+        Dim strBU As String
+        Dim strTrxDate As String = ""
+        Dim intPmtId As Integer
+        Dim lstQueueIDs As New List(Of String)
+
+        intPmtId = ScalarToInt("UNC_Payments", "top 1 RecId", "Status='OK' and RefNo='" & strTrxCode & "'")
+
+        If intPmtId = 0 Then
+            MsgBox("UNC " & strTrxCode & " " & strMemo & " had been deleted. PayBill transaction will NOT be created!")
+            ExecuteNonQuerry("Update AopQueue set TxnId='" & strAppliedTxnCode & "' where Status not in ('OK','XX') and RefNumber='" & strRefNumber & "'", Conn)
+            Return True
+        End If
 
         If strCounter = "N-A" Then
             strQuerry = " select t.Tcode,u.RefNo,v2.Cur,u.Amount,p.VND" _
@@ -4313,7 +4427,8 @@ NoImportBill:
     Public Function GetTourCodeTableByRcp(strRcp As String) As DataTable
         Dim strTourCode As String = GetColumnValuesAsString("FOP", "Document", " where Status='OK' and FOP<>'EXC' and RCPNO='" & strRcp & "'", ",")
         strTourCode = strTourCode.Replace(",", "','")
-        Dim strQuerry As String = "Select t.TourCode, " _
+        Dim strQuerry As String
+        strQuerry = "Select t.TourCode, " _
             & " Case When TourType='MICE' then 'MICE_'+t.city else 'IB_SGN' end as TspCust, " _
             & " Case When TourType='MICE' then 'MICE' else 'IB' end as TspClass, SDate " _
             & " from FLX.dbo.TOS_TourCode t join FLX.dbo.tbl_Requests r On t.TourCode=r.TourCode And r.Status='RR'" _
@@ -4323,6 +4438,29 @@ NoImportBill:
             & " from FLX.dbo.TOS_TourCode t join FLX.dbo.Departure d On t.TourCode=d.Departure And d.Status<>'XX'" _
             & " where t.status='OK' and t.city in ('SGN', 'DAD','HAN') and t.TourCode in ('" & strTourCode & "')"
         Return GetDataTable(strQuerry, Conn_Web)
+        strQuerry = "declare @tc as varchar(50) set @tc='" & strTourCode & "' 
+        select sum(A.c) from
+        (select count(*) as c from tbl_Requests r where r.Status <> 'XX' and r.TourCode = @tc union select count(*) from Departure d where d.Status <> 'XX' and d.Departure = @tc) A"
+
+    End Function
+    Public Function GetFirstTourCodeTableByRcp(strRcp As String) As String
+        Dim strTourCode As String = GetColumnValuesAsString("FOP", "Document", " where Status='OK' and FOP<>'EXC' and RCPNO='" & strRcp & "'", ",")
+        strTourCode = strTourCode.Replace(",", "','")
+        Dim strQuerry As String
+        '= "Select t.TourCode, " _
+        '    & " Case When TourType='MICE' then 'MICE_'+t.city else 'IB_SGN' end as TspCust, " _
+        '    & " Case When TourType='MICE' then 'MICE' else 'IB' end as TspClass, SDate " _
+        '    & " from FLX.dbo.TOS_TourCode t join FLX.dbo.tbl_Requests r On t.TourCode=r.TourCode And r.Status='RR'" _
+        '    & " where t.status='OK' and t.city in ('SGN', 'DAD','HAN') and t.TourCode in ('" & strTourCode & "')" _
+        '    & " union " _
+        '    & " select t.TourCode, 'TOURDESK_'+t.city, 'TD', SDate " _
+        '    & " from FLX.dbo.TOS_TourCode t join FLX.dbo.Departure d On t.TourCode=d.Departure And d.Status<>'XX'" _
+        '    & " where t.status='OK' and t.city in ('SGN', 'DAD','HAN') and t.TourCode in ('" & strTourCode & "')"
+        'Return GetDataTable(strQuerry, Conn_Web)
+        strQuerry = "declare @tc as varchar(50) set @tc='" & strTourCode & "' 
+        select sum(A.c) from
+        (select count(*) as c from tbl_Requests r where r.Status <> 'XX' and r.TourCode = @tc union select count(*) from Departure d where d.Status <> 'XX' and d.Departure = @tc) A"
+        Return ""   'đang làm dở dang
     End Function
     Public Function GetAopRecordNameTVS(strSrv As String, strGrp As String, strCustShortName As String) As String
         If strSrv = "R" Then
@@ -4409,6 +4547,7 @@ NoImportBill:
         Dim lstQueueIDs As New List(Of String)
         Dim decBillAmt As Decimal
         Dim strRefNumber As String = ""
+        Dim strApName As String = IIf(myStaff.City = "SGN", "VENDOR PAYABLE (VND)", "PHAI TRA NGUOI BAN")
         Select Case strApp
             Case "RAS"
                 If myStaff.City = "HAN" Then
@@ -4492,8 +4631,9 @@ NoImportBill:
                         End If
                 End Select
                 strTrxDate = Format(objRow("TrxDate"), "yyyy-MM-dd")
-                'Khong import giao dich trong nam 2021
-                If CDate(strTrxDate) < CDate("01 Jan 22") Then
+
+                'Khong import giao dich trong nam 2022
+                If CDate(strTrxDate) < CDate("01 Jan 23") Then
                     Continue For
 
                 End If
@@ -4505,7 +4645,7 @@ NoImportBill:
                                                             & " (select PayerAccountId from UNC_Payments where RecId=" & intPaymentId & ")")
 
                     intResult = CreateAopQueueJournalEntryByID("", objRow("RefNo"), "UNC", strTrxDate, strRefNumber, "Vietnamese Dong" _
-                                                               , "VENDOR PAYABLE (VND)", Math.Abs(objRow("VND")), objRow("Tcode"), objRow("VendorAopId") _
+                                                               , strApName, Math.Abs(objRow("VND")), objRow("Tcode"), objRow("VendorAopId") _
                                                                , strPayerBankAccountId, strCounter)
                     lstQueueIDs.Add(intResult)
 
@@ -4547,6 +4687,7 @@ NoImportBill:
         Dim lstQueueIDs As New List(Of String)
         Dim strRefNumber As String
         Dim strMemo As String = String.Empty
+        Dim strApName As String = IIf(myStaff.City = "SGN", "VENDOR PAYABLE (VND)", "PHAI TRA NGUOI BAN")
         Select Case strApp
             Case "RAS"
                 If strCounter = "N-A" Then
@@ -4605,7 +4746,7 @@ NoImportBill:
                     strRefNumber = objRow("RefNo")
                 End If
                 intResult = CreateAopQueueJournalEntryByID("", objRow("RefNo"), "UNC", strTrxDate, strRefNumber, "Vietnamese Dong" _
-                                                               , "VENDOR PAYABLE (VND)", decAdjustedAmt, strMemo, objRow("VendorAopId") _
+                                                               , strApName, decAdjustedAmt, strMemo, objRow("VendorAopId") _
                                                                , objRow("PayerBankAccountId"), strCounter)
 
                 lstQueueIDs.Add(intResult)

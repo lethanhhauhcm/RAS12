@@ -3945,9 +3945,13 @@ UpdateDbHere:
             LoadGridGO(False)
             LoadFileList()
             LoadStoredFile()
-            ShowAllRptData(GridTour.CurrentRow.Cells("CustId").Value, Me, GetApplyTo4RptData)
+            ShowAllRptDataFields(GridTour.CurrentRow.Cells("CustId").Value, Me, GetApplyTo4RptData)
+            rtxRptData1.Text = GridTour.CurrentRow.Cells("RptData1").Value
+            rtxRptData2.Text = GridTour.CurrentRow.Cells("RptData2").Value
+            rtxRptData3.Text = GridTour.CurrentRow.Cells("RptData3").Value
         End If
     End Sub
+
     Private Function GetApplyTo4RptData() As String
         Dim strApplyTo As String = String.Empty
 
@@ -4354,8 +4358,8 @@ UpdateDbHere:
         If Not CheckAllRptData(MyCust.CustID, Me) Then Exit Sub
         Dim cmd As SqlClient.SqlCommand = Conn.CreateCommand()
         With GridTour.CurrentRow
-            cmd.CommandText = "update DuToan_Tour (RptData1,RptData2,RptData3)" _
-                           & " values (@RptData1, @RptData2, @RptData3)" _
+            cmd.CommandText = "update DuToan_Tour " _
+                           & " set RptData1=@RptData1, RptData2=@RptData2, RptData3=@RptData3" _
                            & " where RecId=" & .Cells("RecId").Value
             cmd.Parameters.Clear()
             cmd.Parameters.Add("@RptData1", SqlDbType.NVarChar).Value = rtxRptData1.Text.TrimEnd
@@ -4364,6 +4368,10 @@ UpdateDbHere:
 
             If cmd.ExecuteNonQuery = 0 Then
                 MsgBox("Unable to update RptData for Tcode " & .Cells("Tcode").Value)
+            Else
+                GridTour.CurrentRow.Cells("RptData1").Value = rtxRptData1.Text
+                GridTour.CurrentRow.Cells("RptData2").Value = rtxRptData2.Text
+                GridTour.CurrentRow.Cells("RptData3").Value = rtxRptData3.Text
             End If
         End With
 

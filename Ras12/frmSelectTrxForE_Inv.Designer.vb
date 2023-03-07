@@ -290,7 +290,7 @@ Partial Class frmSelectTrxForE_Inv
         '
         Me.cboTemplate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cboTemplate.FormattingEnabled = True
-        Me.cboTemplate.Items.AddRange(New Object() {"INV_AIR1", "INV_AIR2", "INV_AIR3", "INV_AIR4", "INV_NONAIR1", "INV_NONAIR2"})
+        Me.cboTemplate.Items.AddRange(New Object() {"INV_AIR1", "INV_AIR2", "INV_AIR3", "INV_AIR4", "INV_NONAIR1", "INV_NONAIR2", "INV_NONAIR3"})
         Me.cboTemplate.Location = New System.Drawing.Point(511, 443)
         Me.cboTemplate.Name = "cboTemplate"
         Me.cboTemplate.Size = New System.Drawing.Size(166, 21)

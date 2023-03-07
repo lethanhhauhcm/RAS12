@@ -118,7 +118,7 @@ Partial Class frmExportFriesland
         Me.Controls.Add(Me.dtpToDate)
         Me.Controls.Add(Me.dtpFromDate)
         Me.Name = "frmExportFriesland"
-        Me.Text = "frmExportFriesland"
+        Me.Text = "ExportFriesland"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

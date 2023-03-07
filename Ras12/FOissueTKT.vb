@@ -55,6 +55,7 @@ Public Class FOissueTKT
             ChkBizTrip.Checked = False
         End If
         CmbSearchWhat.SelectedIndex = 0
+        pblnNewTrx = True
 
     End Sub
     Private Function LoadVendor() As Boolean
@@ -115,7 +116,7 @@ Public Class FOissueTKT
         Dim i As Integer
         POS = InStr(parAction, "_")
         mRCP = parAction.Substring(POS)
-
+        pblnNewTrx = False
         If POS = 4 Then WhatAction = parAction.Substring(0, 3)
 
         tblTkt = GetDataTable("Select distinct Itinerary from Tkt where DocType='ETK' and Status<>'XX'" _
@@ -336,8 +337,6 @@ Public Class FOissueTKT
         Me.txtFB.Width = 226
         Me.FOP_FOP.Items.Add("CSH")
         Me.RCPCurrency.Items.Add("VND")
-        Me.GrpReasonCode.Top = Me.GrpComm.Top
-        Me.GrpReasonCode.Left = Me.GrpComm.Left
 
         LoadCmbAL(Me.CmbAL)
         LoadCmb_MSC(Me.CmbTVCharge1, "TVCharge")
@@ -362,6 +361,7 @@ Public Class FOissueTKT
             Me.GrpTax.Enabled = False
             Me.GrpGenInfor.Enabled = False
             Me.GrpPaymentDetails.Enabled = False
+            grpPackage.Enabled = False
             DKstatusTKT = " Status <> 'XX'"
             DKstatusFOP = " Status='OK'"
             If WhatAction = "DEL" Then
@@ -381,10 +381,12 @@ Public Class FOissueTKT
             DKstatusFOP = " Status='OK'"
             Me.CmdChangeFOP.Visible = True
             Me.GridFOP.Enabled = True
+            grpPackage.Enabled = False
         ElseIf WhatAction = "SET" Then
             LoadCmb_MSC(Me.CmbCurr, " select distinct Currency as VAL from forEx where Status='OK' ")
             Me.GrpPaymentDetails.Enabled = False
             Me.GrpGenInfor.Enabled = True
+            grpPackage.Enabled = False
             DKstatusTKT = " Status<>'XX'"
             DKstatusFOP = " Status='OK'"
             Me.CmdSave.Visible = False
@@ -395,10 +397,12 @@ Public Class FOissueTKT
             LoadCmb_MSC(Me.CmbCurr, " select distinct Currency as VAL from forEx where Status='OK' ")
             Me.GrpPaymentDetails.Enabled = False
             Me.GrpGenInfor.Enabled = True
+            grpPackage.Enabled = False
             DKstatusTKT = " Status<>'XX'"
             DKstatusFOP = " Status='OK'"
             Me.CmdSave.Visible = False
             Me.CmdAdjust.Visible = True
+
         ElseIf WhatAction = "NON" Then
             Me.CmbPromoCode.Enabled = False
             Me.GrpCharge.Enabled = False
@@ -408,7 +412,6 @@ Public Class FOissueTKT
             DKstatusTKT = " StatusAL='OK'"
             DKstatusFOP = " Status='OK'"
             Me.CmdSaveNON.Visible = True
-            '
         Else
             DKstatusTKT = " Status='OK'"
             DKstatusFOP = " Status='OK'"
@@ -635,10 +638,7 @@ Public Class FOissueTKT
         If InStr("CS_LC", Me.CmbCustType.Text) > 0 Then
             TKTRMK = "BIZ" & Me.ChkBizTrip.Checked.ToString.Substring(0, 1)
             TKTRMK = TKTRMK & "|BKR" & Me.CmbBooker.Text
-            If Me.CmbDocType.Text = "HTL" Then
-                TKTRMK = TKTRMK & "|MSC" & Me.CmbMSaving_HTL.Text.Split("-")(0)
-                TKTRMK = TKTRMK & "|RSC" & Me.cmbRSaving_HTL.Text.Split("-")(0)
-            End If
+
         ElseIf InStr("TO", Me.CmbCustType.Text) > 0 Then
             TKTRMK = TKTRMK & "|BKR" & Me.CmbBooker.Text
         End If
@@ -1195,7 +1195,7 @@ Public Class FOissueTKT
 
     Private Sub txtNetToAL_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtNetToAL.LostFocus
         Dim n2al As Decimal, f As Decimal
-        n2al = CDec(Me.txtNetToAL.Text)
+        Decimal.TryParse(Me.txtNetToAL.Text, n2al)
         f = CDec(Me.txtFare.Text)
         Me.txtNetToAL.Text = Format(n2al, "#,##0.00")
         If InStr("FOC_NET_S+M", Me.CmbProduct.Text.Trim) = 0 Then Me.txtALCommVAL.Text = f - n2al
@@ -1205,7 +1205,7 @@ Public Class FOissueTKT
     End Sub
 
     Private Sub CmbDocType_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CmbDocType.SelectedIndexChanged
-
+        grpPackage.Visible = False
         VisibleReturnDate()
 
         If Me.txtTKNO.Text <> "" Then
@@ -1228,14 +1228,17 @@ Public Class FOissueTKT
                 Prepare4VSA()
             ElseIf Me.CmbDocType.Text = "TVS" Then
                 Prepare4TVS()
+            ElseIf Me.CmbDocType.Text = "PKG" Then
+                Prepare4PKG()
             End If
             Me.txtCheckDigit.Enabled = Me.txtTKNO.Enabled
             If Not Me.txtTKNO.Enabled Then
                 Me.LblPromoCode.Text = ""
                 Me.CmbPromoCode.Items.Add("")
                 Me.CmbPromoCode.Items.Add("HAN")
-                If CmbDocType.Text = "ATK" Then
+                If CmbDocType.Text = "ATK" OrElse CmbDocType.Text = "PKG" Then
                     Me.GrpTax.Enabled = True
+                    GrpCharge.Enabled = True
                 Else
                     Me.GrpTax.Enabled = False
                 End If
@@ -1316,6 +1319,7 @@ Public Class FOissueTKT
         LoadCmb_MSC(Me.CmbPaxType, "PAXTYPE")
         Me.GrpTax.Enabled = True
         Me.GrpComm.Enabled = True
+
         Me.txtFB.Width = 226
         Me.txtFB.Visible = True
         Me.txtFB.Text = ""
@@ -1411,6 +1415,44 @@ Public Class FOissueTKT
         Me.txtTKNO.Left = 165
         Me.txtTKNO.Width = 106
         Me.TxtCharge1.Text = 0
+    End Sub
+    Private Sub Prepare4PKG()
+        grpPackage.Visible = True
+        Me.OptPrintInv.Enabled = False
+        Me.GrpCharge.Enabled = False
+        Me.CmbPromoCode.Enabled = False
+        Me.txtTKNO.Enabled = False
+        If mRCP = "" Then Me.txtTKNO.Text = GenPseudoTKT(Me.CmbDocType.Text, Me.CmbAL.Text)
+        Me.txtTKNO.Left = 165
+        Me.txtTKNO.Width = 106
+        Me.TxtCharge1.Text = 0
+        txtCheckDigit.Visible = False
+        LblFB.Visible = False
+        txtFB.Visible = False
+        lblBkgClass.Visible = False
+        TxtBkgClass.Visible = False
+        LblPaxType.Visible = False
+        CmbPaxType.Visible = False
+        lblItinerary.Visible = False
+        txtItinerary.Visible = False
+        cboDomInt.Visible = False
+        Me.LblDOI.Left = 2
+        txtDOI.Left = 45
+        lbkVatInfoID.Left = 260
+        txtVatInfoID.Left = 330
+        CmbPromoCode.Visible = False
+        TxtTourCode.Visible = False
+        txtRLOC.Visible = False
+        ChkBizTrip.Visible = False
+        lbkTktIssuedBy.Visible = False
+        txtTktIssuedBy.Visible = False
+        lblEmail.Visible = False
+        txtEmail.Visible = False
+        lblReportGrp.Visible = False
+        cboReportGrp.Visible = False
+        grpPackage.Visible = True
+        grpPackage.BringToFront()
+
     End Sub
 
     Private Sub OptRefund_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _
@@ -1521,11 +1563,25 @@ Public Class FOissueTKT
 
         Me.GrpFTKT2Edit.Visible = False
         refreshTKTcontent(e.RowIndex)
+        LoadPackageData()
     End Sub
     Private Function XacDinhCoPhaiVeExc(ByVal pTKNo As String) As Boolean
         Dim SoVeTruocDo As String
         SoVeTruocDo = ScalarToString("TKT", "StockCtrl", " TKNO='" & pTKNo & "' and status<>'XX'")
         Return IIf(SoVeTruocDo = "", False, True)
+    End Function
+    Private Function LoadPackageData() As Boolean
+        Dim tblPkgData As DataTable = GetDataTable("select top 1 * from PkgData where RcpId=" _
+                                                   & pubVarRCPID_BeingEdited & " and Status='OK'")
+        If tblPkgData.Rows.Count > 0 Then
+            txtADT.Text = tblPkgData.Rows(0)("ADT")
+            txtCHD.Text = tblPkgData.Rows(0)("CHD")
+            txtINF.Text = tblPkgData.Rows(0)("INF")
+            txtTwinRoom.Text = tblPkgData.Rows(0)("TwinRoom")
+            txtDoubleRoom.Text = tblPkgData.Rows(0)("DoubleRoom")
+            txtTrippleRoom.Text = tblPkgData.Rows(0)("TrippleRoom")
+            txtSingleRoom.Text = tblPkgData.Rows(0)("SingleRoom")
+        End If
     End Function
     Private Sub refreshTKTcontent(ByVal R As Integer)
         Dim tmpMsg As String, Amt2AL As Decimal, Amt2Cust As Decimal, decAmtCharge2AL As Decimal = 0
@@ -1563,7 +1619,8 @@ Public Class FOissueTKT
         VisibleReturnDate()
 
         If dtpReturnDate.Visible _
-            AndAlso Not IsDBNull(GridTKT.Item("ReturnDate", R).Value) Then
+            AndAlso Not IsDBNull(GridTKT.Item("ReturnDate", R).Value) _
+            AndAlso GridTKT.Item("ReturnDate", R).Value IsNot Nothing Then
             dtpReturnDate.Value = Me.GridTKT.Item("ReturnDate", R).Value
         End If
         Me.TxtBkgClass.Text = Me.GridTKT.Item("BkgClass", R).Value
@@ -1648,6 +1705,8 @@ Public Class FOissueTKT
             tmpMsg = XacDinhLuuYkhiRefundPromoTKT(Me.CmbPromoCode.Text)
             If tmpMsg <> "" Then MsgBox(tmpMsg, MsgBoxStyle.Information, msgTitle)
         End If
+        grpPackage.Visible = (CmbDocType.Text = "PKG")
+
     End Sub
     Private Function DefineAmtCharge2AL() As Decimal
         Dim KQ As Decimal
@@ -2723,7 +2782,7 @@ ExitHere:
                         If ScalarToInt("CompanyInfo", "RecID", "GetReturnDate='True' and CustId=" & MyCust.CustID) Then
                             MyCust.GetReturnDate = True
                         End If
-                        ShowAllRptData(MyCust.CustID, Me, ApplyTo.AIR)
+                        ShowAllRptDataFields(MyCust.CustID, Me, ApplyTo.AIR)
                 End Select
             End If
 
@@ -2761,24 +2820,16 @@ ExitHere:
 
                 CMC = ScalarToString("cwt.dbo.go_companyInfo1", "top 1 CMC", "CustID=" & MyCust.CustID & " and status='OK'")
                 strDK = "select distinct VAL + '-' + details as VAL from cwt.dbo.go_MISC where cat='RSavingHtl' and RMK='"
-                LoadCmb_MSC(Me.cmbRSaving_HTL, strDK & CMC & "'")
-                If Me.cmbRSaving_HTL.Items.Count = 0 Then
-                    LoadCmb_MSC(Me.cmbRSaving_HTL, strDK & "'")
-                End If
 
                 strDK = "select distinct VAL + '-' + Details as VAL from cwt.dbo.go_MISC where cat='MSavingHtl' and RMK='"
 
-                LoadCmb_MSC(Me.CmbMSaving_HTL, strDK & CMC & "'")
-                If Me.CmbMSaving_HTL.Items.Count = 0 Then
-                    LoadCmb_MSC(Me.CmbMSaving_HTL, strDK & "'")
-                End If
+
                 Me.GrpComm.Visible = False
-                Me.GrpReasonCode.Visible = True
+
             ElseIf MySession.Domain = "GSA" And InStr("GA_PG", MyAL.ALCode) > 0 Then
                 Me.Label6.Text = "ShownFare"
                 Me.txtShownFare.Enabled = True
                 Me.GrpComm.Visible = True
-                Me.GrpReasonCode.Visible = False
                 If myStaff.City = "SGN" AndAlso InStr("TO", MyCust.CustType) > 0 Then
                     LoadComboBooker(MyCust.CustID, CmbBooker)
                     CmbBooker.Visible = True
@@ -3751,7 +3802,11 @@ errHandler:
         End If
     End Sub
     Private Sub TxtPaid_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TxtPaid.TextChanged
-        If CDec(Me.TxtPaid.Text) = CDec(Me.txtVNDEquivalent.Text) Then
+        Dim decPaid As Decimal
+        Dim decEquiv As Decimal
+        Decimal.TryParse(Me.TxtPaid.Text, decPaid)
+        Decimal.TryParse(Me.txtVNDEquivalent.Text, decEquiv)
+        If decPaid = decEquiv Then
             Me.CmdSave.Enabled = True
             Me.CmdChangeFOP.Enabled = True
         Else
@@ -4372,15 +4427,26 @@ KoTimThay:
     Private Sub BarTKTList_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BarTKTListSV.Click
         Dim strSQL As String
         If Me.PnlAutoTKT.Visible Then Exit Sub
+        '^_^20230301 mark by 7643 -b-
+        'strSQL = "select distinct TKNO, FTKT,RLOC, fullRTG as Itinerary, PaxName, Fare*qty as fare, Tax*qty as tax, Charge*qty " &
+        '    "as charge, BkgClass, Qty, CommVAL*qty as CommVal, DOI, DOF, FareBasis, TourCode, ROE, Booker," &
+        '    "NetToAL*qty as NetToAL, PaxType, left(StockCtrl,13) as StockCtrl, TaxDetail" _
+        '    & ", ShownFare*Qty as ShownFare, SRV, DocType" _
+        '    & ",Currency, svcfee, TinhTrang, ChargeDetail, svcfeeCur,TktOffc,PRG,ReportGrp,ReturnDate" _
+        '    & ",Email,VatInfoID,TktIssuedBy" _
+        '    & " from tkt_1a where len(tkno)>=8 And srv='" & pubVarSRV & "' " &
+        '    " and CustID=" & Me.CmbChannel.SelectedValue & " and datediff(d,doi,getdate())<365"
+        '^_^20230301 mark by 7643 -e-
+        '^_^20230301 modi by 7643 -b-
         strSQL = "select distinct TKNO, FTKT,RLOC, fullRTG as Itinerary, PaxName, Fare*qty as fare, Tax*qty as tax, Charge*qty " &
             "as charge, BkgClass, Qty, CommVAL*qty as CommVal, DOI, DOF, FareBasis, TourCode, ROE, Booker," &
             "NetToAL*qty as NetToAL, PaxType, left(StockCtrl,13) as StockCtrl, TaxDetail" _
             & ", ShownFare*Qty as ShownFare, SRV, DocType" _
             & ",Currency, svcfee, TinhTrang, ChargeDetail, svcfeeCur,TktOffc,PRG,ReportGrp,ReturnDate" _
-            & ",Email,VatInfoID,TktIssuedBy" _
+            & ",Email,VatInfoID,TktIssuedBy,RptData1,RptData2,RptData3" _
             & " from tkt_1a where len(tkno)>=8 And srv='" & pubVarSRV & "' " &
             " and CustID=" & Me.CmbChannel.SelectedValue & " and datediff(d,doi,getdate())<365"
-
+        '^_^20230301 modi by 7643 -e-
         If MySession.Domain = "GSA" Then
             strSQL = strSQL & " and len(counter)=2 or Counter='GSA'"
         Else
@@ -4604,7 +4670,16 @@ KoTimThay:
                     Me.GridTKT.Item("isEdit", RowNo).Value = ""
                     Me.GridTKT.Item("AmountToAL", RowNo).Value = 0
                     'GridTKT.Item("VatInvId", RowNo).Value = 0
-
+                    '^_^20230301 mark by 7643 -b-
+                    'rtxRptData1.Text = GridTKT.Item("RptData1", RowNo).Value
+                    'rtxRptData2.Text = GridTKT.Item("RptData2", RowNo).Value
+                    'rtxRptData3.Text = GridTKT.Item("RptData3", RowNo).Value
+                    '^_^20230301 mark by 7643 -e-
+                    '^_^20230301 modi by 7643 -b-
+                    rtxRptData1.Text = GridAutoTKT.Item("RptData1", RowNo).Value
+                    rtxRptData2.Text = GridAutoTKT.Item("RptData2", RowNo).Value
+                    rtxRptData3.Text = GridAutoTKT.Item("RptData3", RowNo).Value
+                    '^_^20230301 modi by 7643 -e-
                 End If
             End If
         Next
@@ -4714,6 +4789,7 @@ KoTimThay:
         OptRefundOLD.CheckedChanged, OptServicing.CheckedChanged, OptVoid.CheckedChanged, OptSellFromXX.CheckedChanged
         If mRCP = "" Then
             Me.TxtTRXNO.Text = GenRCPNo(MySession.TRXCode, MySession.POSCode)
+            pblnNewTrx = True
             If Me.TxtTRXNO.Text = "" Or Me.TxtTRXNO.Text.Substring(0, 2) = "YY" Or pubVarRCPID_BeingCreated = 0 Then
                 MsgBox("Cant Generate TRX No. Please Contact System Admin for Help", MsgBoxStyle.Critical, msgTitle)
                 Me.Close()
@@ -4831,6 +4907,7 @@ KoTimThay:
         Dim tmpSFAmt As Decimal, tmpSFName As String, strSQL As String
         Dim tmpFareBase As Decimal, tmpSRV As String = pubVarSRV, ISI As String, RTGType As String
 
+        If CmbDocType.Text = "PKG" Then Exit Sub
         If InStr("OC", tmpSRV) > 0 Then tmpSRV = "R"
         If InStr("A", tmpSRV) > 0 Or Me.CmbDocType.Text = "EXC" Then tmpSRV = "I"
         tmpFareBase = Me.txtFare.Text
@@ -5179,7 +5256,8 @@ KoTimThay:
         '^_^20230106 modi by 7643 -b-
         If InStr(NonAirList, Me.CmbDocType.Text) = 0 Then
             If pubVarSRV <> "R" OrElse (pubVarSRV = "R" And SalesInforOfThisTKT.Rtg.Trim <> txtItinerary.Text.Trim) Then
-                If Me.txtItinerary.Text.Trim.Length < 8 Then Return False
+                If Me.txtItinerary.Text.Trim.Length < 8 _
+                    AndAlso CmbDocType.Text <> "PKG" Then Return False
             End If
         End If
         '^_^20230106 modi by 7643 -e-
@@ -6096,7 +6174,7 @@ InvalidTCP:
         Dim blnVisible As Boolean
 
         If MyCust.GetReturnDate AndAlso CmbDocType.Text = "ETK" AndAlso myStaff.Counter = "CWT" _
-            AndAlso txtItinerary.TextLength > 9 Then
+            AndAlso txtItinerary.TextLength > 10 Then
             blnVisible = True
         End If
         dtpReturnDate.Visible = blnVisible
@@ -6107,9 +6185,16 @@ InvalidTCP:
     Private Sub lbkSaveRptData_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles lbkSaveRptData.LinkClicked
         If Not CheckAllRptData(MyCust.CustID,me) Then Exit Sub
         Dim cmd As SqlClient.SqlCommand = Conn.CreateCommand()
-        cmd.CommandText = "update Rcp (RptData1,RptData2,RptData3)" _
-                       & " values (@RptData1, @RptData2, @RptData3)" _
-                       & " where RecId=" & pubVarRCPID_BeingEdited
+        Dim intRcpId As Integer
+
+        If pblnNewTrx Then
+            intRcpId = pubVarRCPID_BeingCreated
+        Else
+            intRcpId = pubVarRCPID_BeingEdited
+        End If
+        cmd.CommandText = "update Rcp " _
+                       & " set RptData1=@RptData1,RptData2=@RptData2,RptData3=@RptData3" _
+                       & " where RecId=" & intRcpId
         cmd.Parameters.Clear()
         cmd.Parameters.Add("@RptData1", SqlDbType.NVarChar).Value = rtxRptData1.Text.TrimEnd
         cmd.Parameters.Add("@RptData2", SqlDbType.NVarChar).Value = rtxRptData2.Text.TrimEnd
@@ -6117,9 +6202,85 @@ InvalidTCP:
 
         If cmd.ExecuteNonQuery = 0 Then
             MsgBox("Unable to update RptData for Rcp " _
-                   & ScalarToString("RCP", "RcpNo", "RecId=" & pubVarRCPID_BeingEdited))
+                   & ScalarToString("RCP", "RcpNo", "RecId=" & intRcpId))
         End If
 
+    End Sub
+
+    Private Sub lbkSavePkgData_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs)
+        If Not CheckPkgData() Then Exit Sub
+        Dim strQuerry As String
+        Dim intRcpId As Integer
+
+        If pblnNewTrx Then
+            intRcpId = pubVarRCPID_BeingCreated
+            strQuerry = "insert into PkgData (RcpId, ADT, CHD, INF" _
+                        & ", DoubleRoom, TwinRoom, SingleRoom, TrippleRoom" _
+                        & ", Status, FstUser)" _
+                       & " values (" & intRcpId & "," & txtADT.Text & "," & txtCHD.Text & "," & txtINF.Text _
+                       & "," & txtDoubleRoom.Text & "," & txtTwinRoom.Text _
+                       & "," & txtSingleRoom.Text & "," & txtTrippleRoom.Text _
+                       & ",FstUser='" & myStaff.SICode & "')"
+        Else
+            intRcpId = pubVarRCPID_BeingEdited
+            strQuerry = "update PkgData " _
+                       & " set ADT=" & txtADT.Text & ", CHD=" & txtCHD.Text & ", INF=" & txtINF.Text _
+                       & ",DoubleRoom=" & txtDoubleRoom.Text & ", TwinRoom=" & txtTwinRoom.Text _
+                       & ",SingleRoom=" & txtSingleRoom.Text & ",TrippleRoom=" & txtTrippleRoom.Text _
+                       & ",LstUser='" & myStaff.SICode & "',LstDate=getdate()" _
+                       & " where RcpId=" & intRcpId & " and Status='OK'"
+        End If
+
+        If Not ExecuteNonQuerry(strQuerry, Conn) Then
+            MsgBox("Unable to update PkgData for Rcp " _
+                   & ScalarToString("RCP", "RcpNo", "RecId=" & intRcpId))
+        End If
+    End Sub
+    Private Function CheckPkgData() As Boolean
+        If Not CheckFormatTextBox(txtADT, True,, 3) Then
+            Return False
+        End If
+        If Not CheckFormatTextBox(txtCHD, True,, 3) Then
+            Return False
+        End If
+        If Not CheckFormatTextBox(txtINF, True,, 3) Then
+            Return False
+        End If
+        If Not CheckFormatTextBox(txtDoubleRoom, True,, 3) Then
+            Return False
+        End If
+        If Not CheckFormatTextBox(txtTwinRoom, True,, 3) Then
+            Return False
+        End If
+        If Not CheckFormatTextBox(txtSingleRoom, True,, 3) Then
+            Return False
+        End If
+        If Not CheckFormatTextBox(txtTrippleRoom, True,, 3) Then
+            Return False
+        End If
+        Return True
+    End Function
+
+    Private Sub lbkSavePkgData_LinkClicked_1(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles lbkSavePkgData.LinkClicked
+        Dim intRcpId As Integer
+        Dim lstQuerries As New List(Of String)
+        If pblnNewTrx Then
+            intRcpId = pubVarRCPID_BeingCreated
+        Else
+            intRcpId = pubVarRCPID_BeingEdited
+        End If
+        lstQuerries.Add(ChangeStatus_ByDK("PkgData", "XX", "Status='OK' and RcpId=" & intRcpId))
+        lstQuerries.Add("insert into PkgData (RcpId, ADT, CHD, INF" _
+                        & ", DoubleRoom, TwinRoom, SingleRoom, TrippleRoom" _
+                        & ", Status, FstUser) values (" & intRcpId _
+                        & "," & txtADT.Text & "," & txtCHD.Text & "," & txtINF.Text _
+                        & "," & txtDoubleRoom.Text & "," & txtTwinRoom.Text _
+                        & "," & txtSingleRoom.Text & "," & txtTrippleRoom.Text _
+                        & ",'OK','" & myStaff.SICode & "')")
+
+        If Not UpdateListOfQuerries(lstQuerries, Conn) Then
+            MsgBox("Unable to update PkgData!")
+        End If
     End Sub
 
     Private Sub dtpReturnDate_GotFocus(sender As Object, e As EventArgs) Handles dtpReturnDate.GotFocus

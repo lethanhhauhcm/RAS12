@@ -25,6 +25,7 @@ Module mdlDeclare
     Public pubVarSRV As String = ""
     Public pubVarRCPID_BeingEdited As Integer = 0
     Public pubVarRCPID_BeingCreated As Integer = 0
+    Public pblnNewTrx As Boolean
     Public pubVarBackColor As Color
 
     Public CutOverDatePPD As Date

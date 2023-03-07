@@ -100,7 +100,10 @@ Public Class frmSelectCcNbr
         End If
 
         If mstrCustShortName = "IFAD VN" Then
-            strQuerry = strQuerry & "and isnull(m2.Details,'') = ''"
+            'strQuerry = strQuerry & "and isnull(m2.Details,'') = ''"
+            'Không cho map lại thẻ dù kế toán chưa cà
+            strQuerry = strQuerry & "and isnull((select TOP 1 RecId from FOP" _
+                                    & " where Ccid=m.RecId and status <>'XX'),0) =0"
         End If
         strQuerry = strQuerry & " order by m.Val1"
 

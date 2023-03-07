@@ -139,7 +139,7 @@ Public Class frmExportFriesland
         If tblData.Rows.Count = 0 Then
             MsgBox("No Car for selected period")
             Return False
-        ElseIf Not ValidateHotel(tblData) Then
+        ElseIf Not ValidateHotel(tblData, True) Then
             Return False
         End If
         WriteCar(tblData)
@@ -184,7 +184,7 @@ Public Class frmExportFriesland
         If tblData.Rows.Count = 0 Then
             MsgBox("No Visa for selected period")
             Return False
-        ElseIf Not ValidateHotel(tblData) Then
+        ElseIf Not ValidateHotel(tblData, True) Then
             Return False
         End If
         WriteHotel(tblData)
@@ -228,7 +228,7 @@ Public Class frmExportFriesland
         If tblData.Rows.Count = 0 Then
             MsgBox("No Hotel for selected period")
             Return False
-        ElseIf Not ValidateHotel(tblData) Then
+        ElseIf Not ValidateHotel(tblData, True) Then
             Return False
         End If
         WriteHotel(tblData)
@@ -400,21 +400,26 @@ Public Class frmExportFriesland
         Return True
 
     End Function
-    Private Function ValidateHotel(tblData As DataTable) As Boolean
+    Private Function ValidateHotel(tblData As DataTable _
+                                   , Optional blnNoTravelId As Boolean = False) As Boolean
+        Dim intTravelId As Integer
+
         For Each objRow As DataRow In tblData.Rows
-            If objRow("LocalCostCenter") = "" Then
-                Dim objErr As New clsDataError(objRow("TravelId"), objRow("SRV") & " " & objRow("Tcode"), objRow("PaxName"), "LocalCostCenter", "Missing")
+            If Not blnNoTravelId Then
+                intTravelId = objRow("TravelId")
+            End If
+            If IsDBNull(objRow("LocalCostCenter")) OrElse objRow("LocalCostCenter") = "" Then
+                Dim objErr As New clsDataError(intTravelId, objRow("SRV") & " " & objRow("Tcode"), objRow("PaxName"), "LocalCostCenter", "Missing")
                 mlstErrors.Add(objErr)
             End If
             If objRow("LocalEmployeeId") = "" Then
-                Dim objErr As New clsDataError(objRow("TravelId"), objRow("SRV") & " " & objRow("Tcode"), objRow("PaxName"), "LocalEmployeeId", "Missing")
+                Dim objErr As New clsDataError(intTravelId, objRow("SRV") & " " & objRow("Tcode"), objRow("PaxName"), "LocalEmployeeId", "Missing")
                 mlstErrors.Add(objErr)
             End If
             If objRow("TripDescription") = "" Then
-                Dim objErr As New clsDataError(objRow("TravelId"), objRow("SRV") & " " & objRow("Tcode"), objRow("PaxName"), "TripDescription", "Missing")
+                Dim objErr As New clsDataError(intTravelId, objRow("SRV") & " " & objRow("Tcode"), objRow("PaxName"), "TripDescription", "Missing")
                 mlstErrors.Add(objErr)
             End If
-
         Next
         Return True
     End Function
@@ -465,14 +470,20 @@ Public Class frmExportFriesland
     End Function
     Private Function WriteHotel(tblData As DataTable) As Boolean
         Dim arrHotelInfo As String()
+        Dim strBriefDesc As String
         For Each objRow As DataRow In tblData.Rows
             arrHotelInfo = Split(objRow("Brief"), "_")
+            If arrHotelInfo.Length >= 3 Then
+                strBriefDesc = arrHotelInfo(2) & " " & arrHotelInfo(3)
+            Else
+                strBriefDesc = objRow("Brief")
+            End If
 
             mobjMxpFile.WriteLine("CWT;676;" & objRow("LocalEmployeeId") & ";" & Format(objRow("DOI"), "dd/MM/yyyy") _
                                   & ";16;VN;1;" & Format(objRow("TtlToPax") + objRow("SF"), "##0") & ";VND" _
                                   & ";" & Format(objRow("TtlToPax") + objRow("SF"), "##0") & ";VND" _
                                   & ";" & BuildDesciption2(objRow("SRV"), objRow("Tcode"), objRow("PaxName"), objRow("Supplier") _
-                                  & " " & arrHotelInfo(2) & " " & arrHotelInfo(2), objRow("LocalCostCenter"), objRow("LocalEmployeeId"), 16 _
+                                  & " " & strBriefDesc, objRow("LocalCostCenter"), objRow("LocalEmployeeId"), 16 _
                                   , objRow("TripDescription"), "") & strCwtAddressTaxCode)
         Next
         Return True

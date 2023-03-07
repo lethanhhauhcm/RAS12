@@ -35,7 +35,7 @@ Public Class frmSignIn
         End If
 
         intStaffId = do_Login(txtStaffId.Text, txtLogInPSW.Text)
-        If My.Computer.Name = "5-247" AndAlso txtStaffId.Text = "212" Then
+        If My.Computer.Name = "5-247" Or My.Computer.Name = "7-111" AndAlso txtStaffId.Text = "212" Then
             If MsgBox("Có muốn đăng nhập bằng sign in của người khác thì chọn Yes", MsgBoxStyle.YesNo) _
                 = MsgBoxResult.Yes Then
                 Dim strTmp As String = InputBox("Input Staff Id/City",, "4029/HAN")

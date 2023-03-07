@@ -2054,6 +2054,10 @@ Public Class frmE_InvEdit
                 DraftNonAirDetail1(dgrTktListing)
             Case "INV_NONAIR2"
                 DraftNonAirDetail12(dgrTktListing, intVatDiscount)
+                '^_^20230306 add by 7643 -b-
+            Case "INV_NONAIR3"
+                DraftNonAirDetail3(dgrTktListing)
+                '^_^20230306 add by 7643 -e-
         End Select
 
         '^_^20220808 add by 7643 -b-
@@ -2138,6 +2142,72 @@ Public Class frmE_InvEdit
         lstPaxName.CopyTo(arrPaxName)
         'txtBuyer.Text = Strings.Join(arrPaxName, ",")  '^_^20220804 mark by 7643
     End Function
+
+    '^_^20230306 add by 7643 -b-
+    Private Function DraftNonAirDetail3(dgrTktListing As DataGridView) As Boolean
+        Dim lstMainLines As New List(Of clsVatInvLine)
+        Dim lstPaxName As New List(Of String)
+        Dim mBrief, mStrArr(), mStr As String
+
+        For Each objRow As DataGridViewRow In dgrTktListing.Rows
+            Dim objVatLine As New clsVatInvLine
+
+            If objRow.Cells("S").Value Then
+                objVatLine.PaxName = objRow.Cells("PaxName").Value
+                objVatLine.Unit = TranslateUnitName2Vietnamese(objRow.Cells("Service").Value, objRow.Cells("Unit").Value)
+                objVatLine.Quantity = objRow.Cells("Qty").Value
+
+                If objVatLine.Unit = "Đêm" Then
+                    objVatLine.Unit = "Lần"
+                    objVatLine.Quantity = 1
+                End If
+
+                If objRow.Cells("Service").Value = "Accommodations" Then
+                    objVatLine.Desc = TranslateServiceName2Vietnamese(objRow.Cells("Service").Value) & "||" & objRow.Cells("Supplier").Value & "||" & objRow.Cells("PaxName").Value
+                Else
+                    objVatLine.Desc = TranslateServiceName2Vietnamese(objRow.Cells("Service").Value)
+                End If
+
+                If objRow.Cells("Service").Value = "Transfer" Then
+                    objVatLine.Unit = "Lần"
+                    If objRow.Cells("Brief").Value.ToString.Contains("|") And objRow.Cells("Brief").Value.ToString.Contains(vbLf & "Ngày đi:") Then
+                        mBrief = objRow.Cells("Brief").Value.ToString.Split("|")(1)
+                        mBrief = Split(mBrief, vbLf & "Ngày đi:")(0)
+                        objVatLine.Desc &= "||" & objRow.Cells("PaxName").Value & "||" & mBrief
+                    End If
+                ElseIf objRow.Cells("Service").Value = "Accommodations" Then
+                    mStrArr = objRow.Cells("Brief").Value.ToString.Split("_")
+                    If mStrArr.Length >= 3 Then
+                        mStr = mStrArr(2)
+                        mStr = mStr.Split(" ")(0)
+                        mBrief = "Check in " & mStr
+                        mStr = mStrArr(3)
+                        mStr = mStr.Split(" ")(0)
+                        mBrief &= "||" & "Check out " & mStr
+                        objVatLine.Desc &= "||" & mBrief
+                    End If
+                End If
+
+                    objVatLine.ProviderCost = objRow.Cells("VND").Value
+                objVatLine.VatPct = objRow.Cells("VatPct").Value
+                objVatLine.Vat = objRow.Cells("VAT").Value
+
+                lstMainLines.Add(objVatLine)
+                mtblTkts.Rows.Add(objRow.Cells("RecId").Value, objRow.Cells("RcpId").Value)
+            End If
+        Next
+        For Each objVatLine As clsVatInvLine In lstMainLines
+            AddRow4E_Inv(objVatLine.Desc _
+                         , DefineDomIntByVatPct(objVatLine.VatPct), objVatLine.ProviderCost _
+                         , True, objVatLine.Vat, objVatLine.VatPct, objVatLine.Unit, objVatLine.Quantity,)
+            If objVatLine.PaxName <> "" AndAlso Not lstPaxName.Contains(objVatLine.PaxName) Then
+                lstPaxName.Add(objVatLine.PaxName)
+            End If
+        Next
+        Dim arrPaxName(0 To lstPaxName.Count - 1) As String
+        lstPaxName.CopyTo(arrPaxName)
+    End Function
+    '^_^20230306 add by 7643 -e-
 
     '^_^20220808 add by 7643 -b-
     Private Function GetNonAirExtRowDetail(xDutoanID As Integer, xFname As String) As String

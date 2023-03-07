@@ -1449,9 +1449,9 @@ ResumeHere:
 
         strRcp = InputBox("RCPNO").ToString.Trim
         If strRcp <> "" Then
-            If AopQueueExist(strRcp) Then
-                Exit Sub
-            End If
+            'If AopQueueExist(strRcp) Then
+            '    Exit Sub
+            'End If
             If CreateAopQueueAir(strRcp) Then
                 MsgBox("AopQueue created!")
             End If
@@ -1639,11 +1639,12 @@ ResumeHere:
         '    & " where Prod='UNC' and RecId=LinkId and Status='RR'" _
         '    & " and DateDiff(d,LstUpdate,getdate())<14 and FstUpdate>='10 NOV 20' and b.TxnId is not null" _
         '    & " and isPaid='false' and a.refnumber='TR1120-0239'"
-        Dim strQuerry As String = "Select b.TxnId as BillId,a.Recid,a.TrxCode,a.RefNumber,a.Counter,a.memo from AopQueue a" _
-            & " left join AopTravel_Bill b on abs(a.Amount-b.AmountDue)<1 and a.RefNumber=b.Refnumber and a.Memo=b.Memo" _
+        Dim strQuerry As String = "Select b.TxnId as BillId,b.AmountDue,a.Recid,a.TrxCode" _
+            & ",a.RefNumber,a.Counter,a.memo from AopQueue a" _
+            & " left join AopTravel_Bill b on abs(a.Amount-b.AmountDue)<1 And a.RefNumber=b.Refnumber And a.Memo=b.Memo" _
             & " where Prod='UNC' and RecId=LinkId and Status='RR'" _
             & " And a.TxnId='' and DateDiff(d,LstUpdate,getdate())<14 and FstUpdate>='10 NOV 20' and b.TxnId is not null" _
-            & " and isPaid='false' "
+            & " and isPaid='false'"
         Dim tblBill As DataTable = GetDataTable(strQuerry, Conn)
         Dim lstQuerries As New List(Of String)
         For Each objRow As DataRow In tblBill.Rows
